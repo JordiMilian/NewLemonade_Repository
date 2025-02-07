@@ -1,0 +1,276 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3db34047a4689f74d8390fb41e4ad530, type: 3}
+  m_Name: Questions
+  m_EditorClassIdentifier: 
+  questions:
+  - Title: Better product 1
+    MoneyGoal: 43.283382
+    QuestionText: You saved enough money to upgrade your Lemon press
+    answer1:
+      answerTxt: Manual press
+      pricePercentOfGoal: 30
+      price: 12.985015
+      upgradeType: 2
+      variable: 250
+    answer2:
+      answerTxt: Electric Press
+      pricePercentOfGoal: 60
+      price: 25.97003
+      upgradeType: 2
+      variable: 400
+  - Title: Automation 1
+    MoneyGoal: 124.89674
+    QuestionText: Maybe you could setup a cup delivery service in the neighborhood?
+    answer1:
+      answerTxt: Ask my friend James for help
+      pricePercentOfGoal: 15
+      price: 18.734512
+      upgradeType: 4
+      variable: 1
+    answer2:
+      answerTxt: Get a Drone to deliver cups
+      pricePercentOfGoal: 30
+      price: 37.469025
+      upgradeType: 4
+      variable: 0.7
+  - Title: Better transportation 1
+    MoneyGoal: 360.3969
+    QuestionText: Walking to the store is annoying. Let's get something faster
+    answer1:
+      answerTxt: Thrifted Bicicle
+      pricePercentOfGoal: 40
+      price: 144.15877
+      upgradeType: 0
+      variable: 4
+    answer2:
+      answerTxt: Buy an Electric scooter
+      pricePercentOfGoal: 80
+      price: 288.31754
+      upgradeType: 0
+      variable: 10
+  - Title: Automation 2
+    MoneyGoal: 1039.9465
+    QuestionText: Some customers wish to get their bottles delivered at home. What
+      should I do?
+    answer1:
+      answerTxt: I'll go myself
+      pricePercentOfGoal: 15
+      price: 155.99197
+      upgradeType: 5
+      variable: 10
+    answer2:
+      answerTxt: 'Use Delivery App '
+      pricePercentOfGoal: 75
+      price: 779.9599
+      upgradeType: 5
+      variable: 25
+  - Title: Cheaper Buying Price 1
+    MoneyGoal: 3000.827
+    QuestionText: The store in my street is a bit pricey. Where should I go now?
+    answer1:
+      answerTxt: Local Market
+      pricePercentOfGoal: 10
+      price: 300.0827
+      upgradeType: 1
+      variable: -40
+    answer2:
+      answerTxt: Supermarket
+      pricePercentOfGoal: 40
+      price: 1200.3308
+      upgradeType: 1
+      variable: -75
+  - Title: Better product 2
+    MoneyGoal: 8659.0625
+    QuestionText: Let's bottle up the lemonade and sell it instead of cups. Which
+      material should we use?
+    answer1:
+      answerTxt: Glass Bottle
+      pricePercentOfGoal: 40
+      price: 3463.625
+      upgradeType: 2
+      variable: 250
+    answer2:
+      answerTxt: Plastic Bottle
+      pricePercentOfGoal: 30
+      price: 2597.7188
+      upgradeType: 2
+      variable: 450
+  - Title: Better Transportation 2
+    MoneyGoal: 24986.234
+    QuestionText: 'I should get something bigger to move my lemons. '
+    answer1:
+      answerTxt: Ask my friend Sergio for his Van
+      pricePercentOfGoal: 30
+      price: 7495.87
+      upgradeType: 0
+      variable: 2
+    answer2:
+      answerTxt: Buy a Truck
+      pricePercentOfGoal: 85
+      price: 21238.299
+      upgradeType: 0
+      variable: 5
+  - Title: Cheaper Buying Price 2
+    MoneyGoal: 72099.25
+    QuestionText: I could get cheaper Lemons in bulk. Where should I get them from?
+    answer1:
+      answerTxt: Local Farmers
+      pricePercentOfGoal: 10
+      price: 7209.925
+      upgradeType: 2
+      variable: 200
+    answer2:
+      answerTxt: Export Lemons from South Africa
+      pricePercentOfGoal: 60
+      price: 43259.55
+      upgradeType: 2
+      variable: 450
+  - Title: Automation 3
+    MoneyGoal: 208046.62
+    QuestionText: Automation 3
+    answer1:
+      answerTxt: Answer 1
+      pricePercentOfGoal: 20
+      price: 41609.324
+      upgradeType: 3
+      variable: -50
+    answer2:
+      answerTxt: Answer 2
+      pricePercentOfGoal: 40
+      price: 83218.65
+      upgradeType: 3
+      variable: -80
+  - Title: Better Transportation 3
+    MoneyGoal: 600330.75
+    QuestionText: Let's deliver to other cities too. How should I move the lemons
+      there?
+    answer1:
+      answerTxt: Hire 10 truckers
+      pricePercentOfGoal: 60
+      price: 360198.44
+      upgradeType: 0
+      variable: 3
+    answer2:
+      answerTxt: Self Driving Trucks
+      pricePercentOfGoal: 20
+      price: 120066.15
+      upgradeType: 0
+      variable: 5
+  - Title: Better Product 3
+    MoneyGoal: 1732289.8
+    QuestionText: Diferent Ingredients?
+    answer1:
+      answerTxt: Use locally sourced materials
+      pricePercentOfGoal: 50
+      price: 866144.9
+      upgradeType: 2
+      variable: 200
+    answer2:
+      answerTxt: Use artificial additives to cut costs
+      pricePercentOfGoal: 30
+      price: 519686.94
+      upgradeType: 2
+      variable: 450
+  - Title: Automation 3.5
+    MoneyGoal: 4998624
+    QuestionText: Automation 3.5
+    answer1:
+      answerTxt: Build a Farm near the Factory
+      pricePercentOfGoal: 50
+      price: 2499312
+      upgradeType: 5
+      variable: 3
+    answer2:
+      answerTxt: Build a Farm in South Africa
+      pricePercentOfGoal: 60
+      price: 2999174.5
+      upgradeType: 5
+      variable: 5
+  - Title: Better Transportation 4
+    MoneyGoal: 14423824
+    QuestionText: Let's deliver to other cities too. How should I move the lemons
+      there?
+    answer1:
+      answerTxt: Use public train infrastructure
+      pricePercentOfGoal: 30
+      price: 4327147
+      upgradeType: 0
+      variable: 3
+    answer2:
+      answerTxt: Buy my own Cargo ship
+      pricePercentOfGoal: 90
+      price: 12981442
+      upgradeType: 0
+      variable: 5
+  - Title: Better Product 4
+    MoneyGoal: 41620790
+    QuestionText: It's getting a bit hot. Maybe we should be more eco-conscious?
+    answer1:
+      answerTxt: Reserch reusable materials for our products
+      pricePercentOfGoal: 80
+      price: 33296634
+      upgradeType: 2
+      variable: 300
+    answer2:
+      answerTxt: Change our logo green and make a marketing campaing about it
+      pricePercentOfGoal: 10
+      price: 4162079.2
+      upgradeType: 2
+      variable: 500
+  - Title: Automation 4
+    MoneyGoal: 120099250
+    QuestionText: Let's deliver to other cities too. How should I move the lemons
+      there?
+    answer1:
+      answerTxt: Hire 10 truckers
+      pricePercentOfGoal: 10
+      price: 12009925
+      upgradeType: 5
+      variable: 3
+    answer2:
+      answerTxt: Self Driving Trucks
+      pricePercentOfGoal: 40
+      price: 48039700
+      upgradeType: 5
+      variable: 5
+  - Title: Better Product 5
+    MoneyGoal: 346553440
+    QuestionText: Other smaller lemonade companies are starting to get popular. What
+      to do?
+    answer1:
+      answerTxt: Lower our prices to be more competitive
+      pricePercentOfGoal: 20
+      price: 69310690
+      upgradeType: 2
+      variable: 150
+    answer2:
+      answerTxt: Buy the competition and up the prices
+      pricePercentOfGoal: 90
+      price: 311898100
+      upgradeType: 2
+      variable: 700
+  - Title: Final Question
+    MoneyGoal: 1.0000003e+9
+    QuestionText: GAME OVER
+    answer1:
+      answerTxt: GAME OVER
+      pricePercentOfGoal: 0
+      price: 0
+      upgradeType: 5
+      variable: 0
+    answer2:
+      answerTxt: GAME OVER
+      pricePercentOfGoal: 0
+      price: 0
+      upgradeType: 5
+      variable: 0
