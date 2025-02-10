@@ -260,7 +260,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0.05
-        value: 503
+        value: 309.25516
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -269,7 +269,7 @@ AnimationClip:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 0.2
-        value: -235
+        value: -428.7448
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -278,7 +278,7 @@ AnimationClip:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 0.28333333
-        value: -204
+        value: -397.7448
         inSlope: 215
         outSlope: 215
         tangentMode: 136
@@ -287,7 +287,7 @@ AnimationClip:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 0.4
-        value: -192
+        value: -385.7448
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -550,6 +550,34 @@ AnimationClip:
     path: Canvas/Panel/Decorative Lemons/Lemon03
     classID: 224
     script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 312
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.23333333
+        value: 312
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_AnchoredPosition.y
+    path: Canvas/Panel/Decorative Lemons/Lemon01 (1)
+    classID: 224
+    script: {fileID: 0}
   m_PPtrCurves: []
   m_SampleRate: 60
   m_WrapMode: 0
@@ -652,6 +680,13 @@ AnimationClip:
     - serializedVersion: 2
       path: 2797560596
       attribute: 1460864421
+      script: {fileID: 0}
+      typeID: 224
+      customType: 28
+      isPPtrCurve: 0
+    - serializedVersion: 2
+      path: 2147855071
+      attribute: 538195251
       script: {fileID: 0}
       typeID: 224
       customType: 28
@@ -959,7 +994,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0.05
-        value: 503
+        value: 309.25516
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -968,7 +1003,7 @@ AnimationClip:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 0.2
-        value: -235
+        value: -428.7448
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -977,7 +1012,7 @@ AnimationClip:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 0.28333333
-        value: -204
+        value: -397.7448
         inSlope: 215
         outSlope: 215
         tangentMode: 136
@@ -986,7 +1021,7 @@ AnimationClip:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 0.4
-        value: -192
+        value: -385.7448
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -1748,6 +1783,34 @@ AnimationClip:
       m_RotationOrder: 4
     attribute: m_LocalScale.z
     path: Canvas/Panel/Decorative Lemons/Lemon03
+    classID: 224
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 312
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.23333333
+        value: 312
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_AnchoredPosition.y
+    path: Canvas/Panel/Decorative Lemons/Lemon01 (1)
     classID: 224
     script: {fileID: 0}
   m_EulerEditorCurves: []
