@@ -18,6 +18,11 @@ public class GraphDisplayer : MonoBehaviour
     [SerializeField] int MaxDisplayPoints = 20;
     [SerializeField] List<pointInfo> allPoints = new List<pointInfo>();
     public bool stopGraph;
+    [Header("Goal bars manager")]
+    [SerializeField] GameObject GoalBarPrefab;
+    [SerializeField] Color currentBarColor, disabledBarColor;
+    [SerializeField] int maxGoalBarsDisplaying = 3;
+    List<GoalBar> instantiatedBars = new List<GoalBar>();
 
     [Serializable]
     public class pointInfo
@@ -85,15 +90,58 @@ public class GraphDisplayer : MonoBehaviour
     }
     IEnumerator progresiveHeightChange(float previousValue, float newValue)
     {
+        foreach (GoalBar bar in instantiatedBars)
+        {
+            bar.Tf_GoalBar.GetComponent<SpriteRenderer>().color = disabledBarColor;
+        }
         float timer = 0;
         while (timer < timeToVerticalTransitions)
         {
             timer += Time.deltaTime;
             float normalizedTime = timer / timeToVerticalTransitions;
             HeightPerMoney = MaxHeight / Mathf.Lerp(previousValue, newValue, normalizedTime);
+            SetGoalBarsHeight();
             yield return null;
         }
+
+        MakeNextGoalBar();
+        SetGoalBarsHeight();
     }
+    #region Goal bars management
+    struct GoalBar
+    {
+        public float moneyGoal;
+        public Transform Tf_GoalBar;
+    }
+    void MakeNextGoalBar()
+    {
+        
+        GameObject newBar = Instantiate(GoalBarPrefab, Vector3.zero,Quaternion.identity);
+        newBar.GetComponent<SpriteRenderer>().color = currentBarColor;
+        GoalBar newGoalBarStruct = new GoalBar();
+        newGoalBarStruct.moneyGoal = questionsHolder.questions[gameController.nextQuestionIndex].MoneyGoal;
+        newGoalBarStruct.Tf_GoalBar = newBar.transform;
+
+        instantiatedBars.Add(newGoalBarStruct);
+        if(instantiatedBars.Count > maxGoalBarsDisplaying)
+        {
+            Destroy(instantiatedBars[0].Tf_GoalBar.gameObject);
+            instantiatedBars.RemoveAt(0);
+        }
+
+    }
+    void SetGoalBarsHeight()
+    {
+        foreach (GoalBar bar in instantiatedBars)
+        {
+            bar.Tf_GoalBar.position = new Vector3(
+                0,
+                lineRenderer.transform.position.y +  HeightPerMoney * bar.moneyGoal,
+                0
+                );
+        }
+    }
+    #endregion
     #endregion
     public void displayGraph()
     {

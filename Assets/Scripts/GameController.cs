@@ -28,12 +28,20 @@ public class GameController : MonoBehaviour
 
     public float BuyingPrice;
     public float SellingPrice;
+    [Header("Money Testing")]
+    [SerializeField] bool isTestingMoneyString;
     [SerializeField] float MoneyTestingAmount;
     [SerializeField] string MoneyTestingString;
 
+    [Header ("Other References")]
     [SerializeField] QuestionsHolder questionsHolder;
     [SerializeField] GraphDisplayer graphDisplayer;
+    [SerializeField] Animator Animator_QuestionUI;
     [HideInInspector] public List<Question> questions;
+
+    [Header("Game over screen canvases")]
+    [SerializeField] GameObject GO_BillionareScreenRoot;
+    [SerializeField] GameObject GO_BankruptScreenRoot;
     [Serializable]
     public class Question
     {
@@ -53,6 +61,9 @@ public class GameController : MonoBehaviour
     }
     private void Start()
     {
+        GO_BillionareScreenRoot.SetActive(false);
+        GO_BankruptScreenRoot.SetActive(false);
+
         questions = questionsHolder.questions;
         enablePurchaseButtons();
         hideQuestionUI();
@@ -108,8 +119,8 @@ public class GameController : MonoBehaviour
                 SellingTimer = 0;
             }
        }
-
-        MoneyTestingString = floatToMoneyString(MoneyTestingAmount);
+        if (isTestingMoneyString) { MoneyTestingString = floatToMoneyString(MoneyTestingAmount); }
+       
     }
     
     #endregion
@@ -258,7 +269,7 @@ public class GameController : MonoBehaviour
             updateTimerBar(GameOverTimer / TimeToReachGoal);
             yield return null;
         }
-        //GAME OVER
+        GO_BankruptScreenRoot.SetActive(true);
         disablePurchaseButtons();
         hideQuestionUI();
     }
@@ -302,6 +313,7 @@ public class GameController : MonoBehaviour
     [SerializeField] TextMeshProUGUI TMP_Lemons, TMP_Question, TMP_Answer1_Title, TMP_Answer2_Title;
     [SerializeField] TextMeshProUGUI TMP_Answer1_Price, TMP_Answer2_Price, TMP_Answer1_Upgrade, TMP_Answer2_Upgrade;
     [SerializeField] TextMeshProUGUI TMP_Buy_Amount, TMP_Sell_Amount, TMP_Buy_Price, TMP_Sell_Price;
+    
     void UpdateTextDisplays()
     {
         TMP_moneyDisplay.text = floatToMoneyString(CurrentMoney);
@@ -403,6 +415,8 @@ public class GameController : MonoBehaviour
         TMP_Answer1_Upgrade.text = questions[nextQuestionIndex].answer1.variable.ToString();
         TMP_Answer2_Upgrade.text = questions[nextQuestionIndex].answer2.variable.ToString();
 
+        Animator_QuestionUI.SetTrigger("Appear");
+
         pauseAutomising = true;
     }
     void hideQuestionUI()
@@ -430,7 +444,7 @@ public class GameController : MonoBehaviour
     {
         pauseTimer();
         disablePurchaseButtons();
-        if(nextQuestionIndex == questionsHolder.questions.Count)
+        if(nextQuestionIndex == questionsHolder.questions.Count -1)
         {
             BillionareScreen();
             return;
@@ -444,7 +458,8 @@ public class GameController : MonoBehaviour
     }
     void BillionareScreen()
     {
-
+        GO_BillionareScreenRoot.SetActive(true);
+        graphDisplayer.stopGraph = true;
     }
 
     #endregion
