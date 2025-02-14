@@ -47,3 +47,12 @@ TagManager:
   - name: Graph
     uniqueID: 2057942373
     locked: 0
+  - name: BuySellUI
+    uniqueID: 2345405707
+    locked: 0
+  - name: QuestionUI
+    uniqueID: 1939823603
+    locked: 0
+  - name: EndGameScreens
+    uniqueID: 3586367467
+    locked: 0

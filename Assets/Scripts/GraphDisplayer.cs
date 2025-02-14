@@ -16,15 +16,17 @@ public class GraphDisplayer : MonoBehaviour
     public float MaxWidth;
     [SerializeField] Transform startingPosTf;
     [SerializeField] int MaxDisplayPoints = 20;
-    [SerializeField] List<pointInfo> allPoints = new List<pointInfo>();
+    [SerializeField] int pointsPerSmooth;
+    List<pointInfo> allPoints = new List<pointInfo>();
     public bool stopGraph;
     [Header("Goal bars manager")]
     [SerializeField] GameObject GoalBarPrefab;
     [SerializeField] Color currentBarColor, disabledBarColor;
     [SerializeField] int maxGoalBarsDisplaying = 3;
     List<GoalBar> instantiatedBars = new List<GoalBar>();
+    public AudioClip AudioClip_GraphTransition;
+    [SerializeField] Transform Tf_lemonIcon;
 
-    [Serializable]
     public class pointInfo
     {
         public Vector3 currentPos;
@@ -35,7 +37,7 @@ public class GraphDisplayer : MonoBehaviour
    
     float timer;
     float secondsPerPoint;
-    private void Start()
+    public void StartDisplaying()
     {
         secondsPerPoint = 1 / PointsPerSeconds;
         allPoints = new List<pointInfo>();
@@ -47,6 +49,8 @@ public class GraphDisplayer : MonoBehaviour
         HeightPerMoney = MaxHeight / questionsHolder.questions[0].MoneyGoal;
         Debug.Log("HeightPerMoner: " + HeightPerMoney);
         StartCoroutine(progresiveHeightChange(50f, questionsHolder.questions[0].MoneyGoal));
+
+        stopGraph = false;
     }
     private void Update()
     {
@@ -58,6 +62,7 @@ public class GraphDisplayer : MonoBehaviour
         {
             timer = 0;
             makeNewPointAndDisplay();
+            Tf_lemonIcon.position = allPoints[allPoints.Count - 1].smoothPos + lineRenderer.transform.position;
         }
     }
     public void makeNewPointAndDisplay(bool isKeyPoint = false)
@@ -90,6 +95,7 @@ public class GraphDisplayer : MonoBehaviour
     }
     IEnumerator progresiveHeightChange(float previousValue, float newValue)
     {
+        if (gameController.nextQuestionIndex > 0) { SFX_PlayerSingleton.Instance.playSFX(AudioClip_GraphTransition, 0.05f); }
         foreach (GoalBar bar in instantiatedBars)
         {
             bar.Tf_GoalBar.GetComponent<SpriteRenderer>().color = disabledBarColor;
@@ -170,23 +176,61 @@ public class GraphDisplayer : MonoBehaviour
 
             for (int p = 0; p < points.Length; p++)
             {
-                if (points[p].isKeyPoint || p == points.Length - 1 || p == 0)
+                int thisPointsPerSmooth = pointsPerSmooth;
+
+                int posiblePoints = points.Length - p;
+                if( posiblePoints < pointsPerSmooth )
+                {
+                    thisPointsPerSmooth = posiblePoints;
+                }
+
+                if (p < thisPointsPerSmooth)
                 {
                     points[p].smoothPos = points[p].currentPos;
                     smoothedVectors.Add(points[p].smoothPos);
                     continue;
                 }
-                float midHeight = (points[p - 1].currentPos.y + points[p + 1].currentPos.y) / 2;
-                float midHeightPlusOwn = (midHeight + points[p].currentPos.y) / 2;
-                points[p].smoothPos = new Vector3(points[p].currentPos.x, midHeightPlusOwn, 0);
+                
+
+                float allAddedHeights = points[p].currentPos.y;
+                for (int i = 0; i < thisPointsPerSmooth; i++) 
+                {
+                    allAddedHeights += points[p - i].currentPos.y;
+                    allAddedHeights += points[p + i].currentPos.y;
+                }
+                float mediaHeight = allAddedHeights / ((thisPointsPerSmooth * 2)+1);
+                points[p].smoothPos = new Vector3(points[p].currentPos.x, mediaHeight, 0);
                 smoothedVectors.Add(points[p].smoothPos);
             }
             return smoothedVectors.ToArray();
         }
     }
 
-   
-    
-    
-    
+    [Header("Line renderer wide segment")]
+    [SerializeField] float wideSegment_Lenght;
+    [SerializeField] float wideSegment_maxWidth;
+    [SerializeField] float defaultLineWidth;
+    [SerializeField] Color wideSegment_Color, defaulLineColor;
+    [SerializeField] float colorgradientWidth;
+
+    public void UpdateTimerBar(float normalizedTime)
+    {
+        AnimationCurve newCurve = new AnimationCurve();
+        newCurve.AddKey(normalizedTime, wideSegment_maxWidth);
+        newCurve.AddKey(normalizedTime - (wideSegment_Lenght * 1.5f), defaultLineWidth);
+        newCurve.AddKey(normalizedTime + (wideSegment_Lenght * 0.5f), defaultLineWidth);
+        lineRenderer.widthCurve = newCurve;
+        GradientColorKey[] newGradientColors = new GradientColorKey[2];
+        newGradientColors[0].color = wideSegment_Color;
+        newGradientColors[0].time = normalizedTime;
+        newGradientColors[1].color = defaulLineColor;
+        newGradientColors[1].time = normalizedTime + colorgradientWidth;
+        Gradient newGrad = new Gradient();
+        newGrad.SetKeys(newGradientColors, lineRenderer.colorGradient.alphaKeys);
+
+        lineRenderer.colorGradient = newGrad;
+    }
+
+
+
 }

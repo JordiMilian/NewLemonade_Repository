@@ -1,17 +1,17 @@
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.UIElements;
 
 public class GameController : MonoBehaviour
 {
-    [SerializeField] float StartingMoney;
+    
     float currentMoney;
     event Action<float> OnMoneyUpdated;
-    event Action OnGoalUpdated;
     public float CurrentMoney
     {
         get { return currentMoney; }
@@ -25,9 +25,15 @@ public class GameController : MonoBehaviour
     public int LemonsPerBuy;
     public int LemonsPerSell;
     public int LemonsPerAutomaticSell;
+    bool arePurchaseDisabled;
 
     public float BuyingPrice;
     public float SellingPrice;
+    [Header("Start game stats")]
+    [SerializeField] float StartingMoney;
+    [SerializeField] int startingLemons;
+    [SerializeField] int starting_lemonsPerBuy, starting_lemonsPerSell, starting_lemonsPerAutomaticSell;
+    [SerializeField] float starting_buyingPrice, starting_SellingPrice;
     [Header("Money Testing")]
     [SerializeField] bool isTestingMoneyString;
     [SerializeField] float MoneyTestingAmount;
@@ -36,12 +42,21 @@ public class GameController : MonoBehaviour
     [Header ("Other References")]
     [SerializeField] QuestionsHolder questionsHolder;
     [SerializeField] GraphDisplayer graphDisplayer;
-    [SerializeField] Animator Animator_QuestionUI;
+    [SerializeField] Animator Animator_QuestionUI, Animator_TableLemons, Animator_Tutorial;
     [HideInInspector] public List<Question> questions;
+    [SerializeField] MusicLoopDistorder musicLoopController;
+    [SerializeField] PostProcessingController postProcessingController;
+    [SerializeField] AudioDistortionController distortionController;
+    [SerializeField] GameObject MainMenuCanvas;
 
     [Header("Game over screen canvases")]
     [SerializeField] GameObject GO_BillionareScreenRoot;
     [SerializeField] GameObject GO_BankruptScreenRoot;
+
+    [Header("Audio Clips")]
+    [SerializeField] AudioClip AudioClip_Buy;
+    [SerializeField] AudioClip AudioClip_Sell, AudioClip_CantBuy, AudioClip_CantSell, AudioClip_GoalReached, AudioClip_AnswerPressed;
+
     [Serializable]
     public class Question
     {
@@ -65,28 +80,126 @@ public class GameController : MonoBehaviour
         GO_BankruptScreenRoot.SetActive(false);
 
         questions = questionsHolder.questions;
-        enablePurchaseButtons();
-        hideQuestionUI();
-        restartTimer();
+        hidePurchaseButtons();
+        disablePurchaseButtons();
+        GO_QuestionsRoot.SetActive(false);
         SetUpMoneyBar();
         CurrentMoney = StartingMoney;
-
+        pauseAutomising = true;
         SetUpTimerBar();
+        graphDisplayer.stopGraph = true;
 
         UpdateTextDisplays();
-        
+        TutorialCanvas.SetActive(false);
     }
+    #region MAIN MENU
+    public void showMainMenu()
+    {
+        MainMenuCanvas.SetActive(true);
+    }
+    void restartStats()
+    {
+        currentMoney = StartingMoney;
+        CurrentLemons = startingLemons;
+        LemonsPerBuy = starting_lemonsPerBuy;
+        LemonsPerSell = starting_lemonsPerSell;
+        SellingPrice = starting_SellingPrice;
+        BuyingPrice = starting_buyingPrice;
+        LemonsPerAutomaticSell = starting_lemonsPerAutomaticSell;
+        isAutomatising = false;
+        UpdateTextDisplays();
+    }
+    public void StartPlaying()
+    {
+        restartStats();
+        restartTimer();
+        showPurchaseButtons();
+        
+        pauseAutomising = true;
+        
+        MainMenuCanvas.SetActive(false);
+        musicLoopController.startRegularMusicTransition();
+        SFX_PlayerSingleton.Instance.playSFX(graphDisplayer.AudioClip_GraphTransition);
+        StartCoroutine(StartGameCoroutine());
+        postProcessingController.RemoveFilGrain();
+    }
+    [Header("Start Game stuff")]
+    [SerializeField] AnimationCurve FieldOfViewCurve;
+    [SerializeField] float seconds_startGameTransition;
+    [SerializeField] Volume postProcessingVolume;
+    [SerializeField] int TutorialPhasesCount;
+    [SerializeField] GameObject TutorialCanvas;
+    public bool skipTutorial;
+    IEnumerator StartGameCoroutine()
+    {
+        
+        int tutorialPhasesPased = 0;
+        TutorialCanvas.SetActive(true);
+        yield return StartCoroutine(LensDistortionPopUp());
+
+        graphDisplayer.StartDisplaying();
+        if (skipTutorial) 
+        { 
+            TutorialCanvas.SetActive(false);
+            enablePurchaseButtons();
+            pauseAutomising = false;
+            graphDisplayer.stopGraph = false;
+            yield break;
+        }
+        yield return new WaitForSeconds(1);
+        Animator_Tutorial.SetTrigger("nextShadow");
+        graphDisplayer.stopGraph = true;
+        pauseTimer();
+    Waitagain:
+        
+        while(Input.GetMouseButtonDown(0) == false)
+        {
+            yield return null;
+        }
+        Animator_Tutorial.SetTrigger("nextShadow");
+        yield return new WaitForSeconds(0.5f);
+        tutorialPhasesPased++;
+        if(tutorialPhasesPased < TutorialPhasesCount) { goto Waitagain; }
+
+        pauseAutomising = false;
+        restartTimer();
+        graphDisplayer.stopGraph = false;
+        enablePurchaseButtons();
+    }
+    IEnumerator LensDistortionPopUp()
+    {
+        postProcessingVolume.profile.TryGet(out LensDistortion lensDistortion);
+        float timer = 0;
+        while (timer < seconds_startGameTransition)
+        {
+            timer += Time.deltaTime;
+            lensDistortion.intensity.value = FieldOfViewCurve.Evaluate(timer / seconds_startGameTransition);
+            yield return null;
+        }
+        lensDistortion.intensity.value = 0;
+    }
+    public void ExitGame()
+    {
+        Application.Quit();
+    }
+    #endregion
     #region AUTOMATIC SELLING AND BUYING
-    
+    [Header("Automatic Sell")]
+
     public float secondsToAutomaticSell;
     float SellingTimer;
-    public bool isAutomatisingSell;
+    public bool isAutomatising;
     bool pauseAutomising;
 
     bool isHoldingBuy, isHoldingSell;
     float holdBuyTimer, holdSellTimner;
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            CurrentMoney = questionsHolder.questions[nextQuestionIndex].MoneyGoal;
+            BuyLemons();
+        }
         if(isHoldingBuy)
         {
             holdBuyTimer += Time.deltaTime;
@@ -106,11 +219,12 @@ public class GameController : MonoBehaviour
             }
         }
 
+        if (isTestingMoneyString) { MoneyTestingString = floatToMoneyString(MoneyTestingAmount); }
 
 
         if (pauseAutomising) { return; }
 
-       if(isAutomatisingSell)
+       if(isAutomatising)
        {
             SellingTimer += Time.deltaTime;
             if (SellingTimer >= secondsToAutomaticSell)
@@ -119,17 +233,19 @@ public class GameController : MonoBehaviour
                 SellingTimer = 0;
             }
        }
-        if (isTestingMoneyString) { MoneyTestingString = floatToMoneyString(MoneyTestingAmount); }
-       
+        
     }
     
     #endregion
     #region BUY AND SELL
     public void BuyLemons()
     {
+        if (arePurchaseDisabled) { return; }
         int affordableLemons = Mathf.RoundToInt((CurrentMoney / BuyingPrice) - 0.5f);
+
         if (affordableLemons < LemonsPerBuy)
         {
+            if(affordableLemons == 0) { SFX_PlayerSingleton.Instance.playSFX(AudioClip_CantBuy,0.1f); return; }
             CurrentMoney -= affordableLemons * BuyingPrice;
             CurrentLemons += affordableLemons;
         }
@@ -139,11 +255,15 @@ public class GameController : MonoBehaviour
             CurrentLemons += LemonsPerBuy;
         }
         UpdateTextDisplays();
+        SFX_PlayerSingleton.Instance.playSFX(AudioClip_Buy, 0.1f);
     }
     public void SellLemons()
     {
+        if (arePurchaseDisabled) { return; }
         if (CurrentLemons < LemonsPerSell)
         {
+            if(CurrentLemons == 0) { SFX_PlayerSingleton.Instance.playSFX(AudioClip_CantBuy, 0.1f);return; }
+
             CurrentMoney += CurrentLemons * SellingPrice;
             CurrentLemons -= CurrentLemons;
         }
@@ -153,6 +273,7 @@ public class GameController : MonoBehaviour
             CurrentLemons -= LemonsPerSell;
         }
         UpdateTextDisplays();
+        SFX_PlayerSingleton.Instance.playSFX(AudioClip_Sell, 0.1f);
     }
     public void automaticPurchase()
     {
@@ -223,6 +344,8 @@ public class GameController : MonoBehaviour
         graphDisplayer.updateGraphHeight();
         graphDisplayer.displayGraph();
 
+        SFX_PlayerSingleton.Instance.playSFX(AudioClip_AnswerPressed);
+
         //
         void ProcessAnswer(Answer answer)
         {
@@ -242,7 +365,7 @@ public class GameController : MonoBehaviour
                     secondsToAutomaticSell += secondsToAutomaticSell * (answer.variable / 100);
                     break;
                 case UpgradeTypes.StartAutomation:
-                    isAutomatisingSell = true;
+                    isAutomatising = true;
                     secondsToAutomaticSell = answer.variable;
                     break;
                 case UpgradeTypes.MultiplyLemonsPerAutomaticSell:
@@ -266,7 +389,7 @@ public class GameController : MonoBehaviour
         while(GameOverTimer < TimeToReachGoal)
         {
             GameOverTimer += Time.deltaTime;
-            updateTimerBar(GameOverTimer / TimeToReachGoal);
+            graphDisplayer.UpdateTimerBar(GameOverTimer / TimeToReachGoal);
             yield return null;
         }
         GO_BankruptScreenRoot.SetActive(true);
@@ -304,27 +427,22 @@ public class GameController : MonoBehaviour
         timerBar_startingPos = new Vector2(graphDisplayer.lineRenderer.transform.position.x, TfTimerBar.transform.position.y);
         timerBar_endPos = timerBar_startingPos + new Vector2(graphDisplayer.MaxWidth, 0);
     }
-    void updateTimerBar(float normalizedTime)
-    {
-        TfTimerBar.position = Vector2.Lerp(timerBar_startingPos,timerBar_endPos, normalizedTime);
-    }
     [Header("Text Mesh Pros")]
     [SerializeField] TextMeshProUGUI TMP_moneyDisplay;
     [SerializeField] TextMeshProUGUI TMP_Lemons, TMP_Question, TMP_Answer1_Title, TMP_Answer2_Title;
     [SerializeField] TextMeshProUGUI TMP_Answer1_Price, TMP_Answer2_Price, TMP_Answer1_Upgrade, TMP_Answer2_Upgrade;
-    [SerializeField] TextMeshProUGUI TMP_Buy_Amount, TMP_Sell_Amount, TMP_Buy_Price, TMP_Sell_Price;
+    [SerializeField] TextMeshProUGUI TMP_Buy_Amount, TMP_Sell_Amount, TMP_Buy_Price, TMP_Sell_Price, TMP_CurrentMoney_QuestionUI;
     
     void UpdateTextDisplays()
     {
         TMP_moneyDisplay.text = floatToMoneyString(CurrentMoney);
         TMP_Lemons.text = CurrentLemons.ToString();
-        TMP_Buy_Amount.text = LemonsPerBuy.ToString();
-        TMP_Sell_Amount.text = LemonsPerSell.ToString();
+        TMP_Buy_Amount.text = "Buy "+ LemonsPerBuy.ToString() + " Lemons";
+        TMP_Sell_Amount.text = "Sell " + LemonsPerSell.ToString() + " Lemonades";
         TMP_Buy_Price.text = floatToMoneyString(LemonsPerBuy * BuyingPrice);
         TMP_Sell_Price.text = floatToMoneyString(LemonsPerSell * SellingPrice);
         TMP_Answer1_Upgrade.text = upgradeToDisplayString(questions[nextQuestionIndex].answer1);
         TMP_Answer2_Upgrade.text = upgradeToDisplayString(questions[nextQuestionIndex].answer2);
-
 
         //
         string upgradeToDisplayString(Answer answer)
@@ -351,8 +469,8 @@ public class GameController : MonoBehaviour
     string floatToMoneyString(float amount)
     {
 
-        if(amount < 10) { string rawNumbers = amount.ToString("F2"); return rawNumbers + " $"; }
-        if (amount >= 10 && amount < 100) { string rawNumbers = amount.ToString("F1"); return rawNumbers + " $"; }
+        if(amount < 10) { string rawNumbers = amount.ToString("F2"); return  "$ " + rawNumbers; }
+        if (amount >= 10 && amount < 100) { string rawNumbers = amount.ToString("F1"); return "$ "+ rawNumbers; }
 
 
         string procesedNumber = amount.ToString("F0");
@@ -385,7 +503,7 @@ public class GameController : MonoBehaviour
             procesedNumber = procesedNumber.Remove(procesedNumber.Length - 9, 9);
             procesedNumber += "B";
         }
-        return procesedNumber + " $";
+        return  "$ " + procesedNumber;
     }
     #endregion
 
@@ -396,13 +514,21 @@ public class GameController : MonoBehaviour
     [SerializeField] GameObject GO_QuestionsRoot;
     void disablePurchaseButtons()
     {
-        Button_Buy.SetActive(false);
-        Button_Sell.SetActive(false);
+        arePurchaseDisabled = true;
     }
     void enablePurchaseButtons()
     {
-        Button_Buy.SetActive(true);
+        arePurchaseDisabled = false;
+    }
+    void hidePurchaseButtons()
+    {
+        Button_Buy.SetActive(false);
+        Button_Sell.SetActive(false);
+    }
+    void showPurchaseButtons()
+    {
         Button_Sell.SetActive(true);
+        Button_Buy.SetActive(true);
     }
     void showQuestionUI()
     {
@@ -414,16 +540,25 @@ public class GameController : MonoBehaviour
         TMP_Answer2_Price.text = floatToMoneyString(questions[nextQuestionIndex].answer2.price);
         TMP_Answer1_Upgrade.text = questions[nextQuestionIndex].answer1.variable.ToString();
         TMP_Answer2_Upgrade.text = questions[nextQuestionIndex].answer2.variable.ToString();
+        TMP_CurrentMoney_QuestionUI.text = floatToMoneyString(currentMoney);
 
         Animator_QuestionUI.SetTrigger("Appear");
+        musicLoopController.AddLowFilter();
+        
+        Debug.Log("Goal reched: " + nextQuestionIndex);
 
         pauseAutomising = true;
     }
     void hideQuestionUI()
     {
         GO_QuestionsRoot.SetActive(false);
-
+        Animator_TableLemons.SetTrigger("jump");
+        musicLoopController.RemoveLowFilter();
+        musicLoopController.SetNormalizedDistortion(nextQuestionIndex, questionsHolder.questions.Count -1);
+        postProcessingController.SetPostProcessing(nextQuestionIndex, questionsHolder.questions.Count - 1);
+        distortionController.SetAudioDistortion(nextQuestionIndex, questionsHolder.questions.Count - 1);
         pauseAutomising = false;
+        StartCoroutine(LensDistortionPopUp());
     }
     #endregion
     #region NEXT QUESTION
@@ -447,19 +582,28 @@ public class GameController : MonoBehaviour
         if(nextQuestionIndex == questionsHolder.questions.Count -1)
         {
             BillionareScreen();
+            graphDisplayer.stopGraph = true;
+            StopAllHolds();
+            OnMoneyUpdated -= onMoneyUpdated;
             return;
         }
 
         showQuestionUI();
         graphDisplayer.makeNewPointAndDisplay(true);
         graphDisplayer.stopGraph = true;
-
+        
         StopAllHolds();
+        SFX_PlayerSingleton.Instance.playSFX(AudioClip_GoalReached);
     }
+    [SerializeField] BillionareScreenController billionareScreenController;
     void BillionareScreen()
     {
         GO_BillionareScreenRoot.SetActive(true);
+        musicLoopController.startBillionareDistortion();
         graphDisplayer.stopGraph = true;
+        billionareScreenController.StartBillionareCutscene();
+        Debug.Log("Show billionare cutscene");
+        postProcessingController.AddFilmGrain();
     }
 
     #endregion
