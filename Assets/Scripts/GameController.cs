@@ -44,8 +44,8 @@ public class GameController : MonoBehaviour
     [SerializeField] GraphDisplayer graphDisplayer;
     [SerializeField] Animator Animator_QuestionUI, Animator_TableLemons, Animator_Tutorial;
     [HideInInspector] public List<Question> questions;
-    [SerializeField] MusicLoopDistorder musicLoopController;
-    [SerializeField] PostProcessingController postProcessingController;
+    [SerializeField] MusicLoopDistorder musicControl;
+    [SerializeField] PostProcessingController postProController;
     [SerializeField] AudioDistortionController distortionController;
     [SerializeField] GameObject MainMenuCanvas;
 
@@ -63,7 +63,9 @@ public class GameController : MonoBehaviour
         public string Title;
         public float MoneyGoal;
         public string QuestionText;
+        public Dude_Controller.dudeTypes dudeToAppear;
         public Answer answer1, answer2;
+        
     }
     [Serializable]
     public struct Answer
@@ -84,18 +86,25 @@ public class GameController : MonoBehaviour
         disablePurchaseButtons();
         GO_QuestionsRoot.SetActive(false);
         SetUpMoneyBar();
-        CurrentMoney = StartingMoney;
         pauseAutomising = true;
         SetUpTimerBar();
         graphDisplayer.stopGraph = true;
 
         UpdateTextDisplays();
         TutorialCanvas.SetActive(false);
+
+        showMainMenu();
+        restartStats();
     }
     #region MAIN MENU
     public void showMainMenu()
     {
         MainMenuCanvas.SetActive(true);
+        postProController.SetPostProcesing(postProController.postPoInfo_MainMenu);
+        //MusicLoopDistorder.musicDistortionStats baseStats = new MusicLoopDistorder.musicDistortionStats();
+        //baseStats = MusicLoopDistorder.musicDistortionStats.CopyStats(baseStats, musicControl.musicStats_current);
+        musicControl.TransitionFromCurrentStats(musicControl.musicStats_MainMenu, musicControl.seconds_TransitionToMainMenu);
+
     }
     void restartStats()
     {
@@ -107,9 +116,10 @@ public class GameController : MonoBehaviour
         BuyingPrice = starting_buyingPrice;
         LemonsPerAutomaticSell = starting_lemonsPerAutomaticSell;
         isAutomatising = false;
+        nextQuestionIndex = 0;
         UpdateTextDisplays();
     }
-    public void StartPlaying()
+    public void StartPlayingButton()
     {
         restartStats();
         restartTimer();
@@ -118,10 +128,19 @@ public class GameController : MonoBehaviour
         pauseAutomising = true;
         
         MainMenuCanvas.SetActive(false);
-        musicLoopController.startRegularMusicTransition();
+        musicControl.TransitionStats(musicControl.musicStats_MainMenu, musicControl.musicStats_startQuestion, musicControl.seconds_TransitionToStartPlaying);
         SFX_PlayerSingleton.Instance.playSFX(graphDisplayer.AudioClip_GraphTransition);
         StartCoroutine(StartGameCoroutine());
-        postProcessingController.RemoveFilGrain();
+        postProController.SetPostProcesing(postProController.postPoinfo_startQuestions);
+    }
+    public void Button_RestartGame()
+    {
+        GO_BankruptScreenRoot.SetActive(false);
+        restartStats();
+        restartTimer();
+        musicControl.TransitionFromCurrentStats(musicControl.musicStats_startQuestion, 1);
+        postProController.SetPostProcesing(postProController.postPoinfo_startQuestions);
+        StartCoroutine(StartGameCoroutine());
     }
     [Header("Start Game stuff")]
     [SerializeField] AnimationCurve FieldOfViewCurve;
@@ -132,7 +151,6 @@ public class GameController : MonoBehaviour
     public bool skipTutorial;
     IEnumerator StartGameCoroutine()
     {
-        
         int tutorialPhasesPased = 0;
         TutorialCanvas.SetActive(true);
         yield return StartCoroutine(LensDistortionPopUp());
@@ -161,6 +179,7 @@ public class GameController : MonoBehaviour
         tutorialPhasesPased++;
         if(tutorialPhasesPased < TutorialPhasesCount) { goto Waitagain; }
 
+        skipTutorial = true;
         pauseAutomising = false;
         restartTimer();
         graphDisplayer.stopGraph = false;
@@ -335,6 +354,7 @@ public class GameController : MonoBehaviour
         else if(answer == 2) { ProcessAnswer(questions[nextQuestionIndex].answer2); }
 
         hideQuestionUI();
+        Dude_Controller.Instance.CallHideDude();
         enablePurchaseButtons();
         
         restartTimer();
@@ -392,9 +412,18 @@ public class GameController : MonoBehaviour
             graphDisplayer.UpdateTimerBar(GameOverTimer / TimeToReachGoal);
             yield return null;
         }
+        BankrupedScreen();
+    }
+    void BankrupedScreen()
+    {
         GO_BankruptScreenRoot.SetActive(true);
+        GO_BankruptScreenRoot.GetComponent<Animator>().SetTrigger("appear");
         disablePurchaseButtons();
         hideQuestionUI();
+        pauseAutomising = true;
+        StopAllHolds();
+        musicControl.TransitionFromCurrentStats(musicControl.musicStats_MainMenu, musicControl.secondsToTransitionToBillionare);
+        postProController.SetPostProcesing(postProController.postPoInfo_GameOverScreens);
     }
     void resumeTimer()
     {
@@ -543,7 +572,7 @@ public class GameController : MonoBehaviour
         TMP_CurrentMoney_QuestionUI.text = floatToMoneyString(currentMoney);
 
         Animator_QuestionUI.SetTrigger("Appear");
-        musicLoopController.AddLowFilter();
+        musicControl.AddLowFilter();
         
         Debug.Log("Goal reched: " + nextQuestionIndex);
 
@@ -553,9 +582,9 @@ public class GameController : MonoBehaviour
     {
         GO_QuestionsRoot.SetActive(false);
         Animator_TableLemons.SetTrigger("jump");
-        musicLoopController.RemoveLowFilter();
-        musicLoopController.SetNormalizedDistortion(nextQuestionIndex, questionsHolder.questions.Count -1);
-        postProcessingController.SetPostProcessing(nextQuestionIndex, questionsHolder.questions.Count - 1);
+        musicControl.RemoveLowFilter();
+        musicControl.SetQuestionsDistortion(nextQuestionIndex, questionsHolder.questions.Count -1);
+        postProController.SetQuestionsPostProcessing(nextQuestionIndex, questionsHolder.questions.Count - 1);
         distortionController.SetAudioDistortion(nextQuestionIndex, questionsHolder.questions.Count - 1);
         pauseAutomising = false;
         StartCoroutine(LensDistortionPopUp());
@@ -599,11 +628,11 @@ public class GameController : MonoBehaviour
     void BillionareScreen()
     {
         GO_BillionareScreenRoot.SetActive(true);
-        musicLoopController.startBillionareDistortion();
+        musicControl.TransitionStats(musicControl.musicStats_endQuestion, musicControl.musicStats_Billionare, musicControl.secondsToTransitionToBillionare);
         graphDisplayer.stopGraph = true;
         billionareScreenController.StartBillionareCutscene();
         Debug.Log("Show billionare cutscene");
-        postProcessingController.AddFilmGrain();
+        postProController.SetPostProcesing(postProController.postPoInfo_GameOverScreens);
     }
 
     #endregion

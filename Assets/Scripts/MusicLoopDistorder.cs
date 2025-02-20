@@ -10,93 +10,103 @@ public class MusicLoopDistorder : MonoBehaviour
     [SerializeField] AudioEchoFilter echoFilter;
     [SerializeField] AudioLowPassFilter lowPassFilter;
 
-    [SerializeField] musicDistortionStats StartGameStats, EndGameStats, BillionareStats;
+    public musicDistortionStats musicStats_startQuestion, musicStats_endQuestion, musicStats_Billionare, musicStats_MainMenu;
+    public musicDistortionStats musicStats_current;
 
-    [SerializeField] float secondsToTransitionToBillionare;
+    public float secondsToTransitionToBillionare;
+    Coroutine currentTransition;
     [Serializable]
-    struct musicDistortionStats
+    public struct musicDistortionStats
     {
         public float Pitch;
         public float Volume;
         public float Distortion;
         public float Delay;
         public float Decay;
+        public bool hasLowerFilter;
+
+        public static musicDistortionStats CopyStats( musicDistortionStats referenceStats)
+        {
+            musicDistortionStats targetStats = new musicDistortionStats();
+
+            targetStats.Volume = referenceStats.Volume;
+            targetStats.Pitch = referenceStats.Pitch;
+            targetStats.Distortion = referenceStats.Distortion;
+            targetStats.Decay = referenceStats.Decay;
+            targetStats.Delay = referenceStats.Delay;
+            targetStats.hasLowerFilter = referenceStats.hasLowerFilter;
+            return targetStats;
+        }
+        public static musicDistortionStats LerpStats(musicDistortionStats statsA, musicDistortionStats statsB, float t)
+        {
+            musicDistortionStats newStats = new musicDistortionStats();
+            newStats.Volume = Mathf.Lerp(statsA.Volume, statsB.Volume, t);
+            newStats.Pitch = Mathf.Lerp(statsA.Pitch, statsB.Pitch, t);
+            newStats.Distortion = Mathf.Lerp(statsA.Distortion, statsB.Distortion, t);
+            newStats.Delay = Mathf.Lerp(statsA.Delay, statsB.Delay, t);
+            newStats.Decay = Mathf.Lerp(statsA.Decay, statsB.Decay, t);
+            newStats.hasLowerFilter = statsB.hasLowerFilter;
+
+            return newStats;
+        }
     }
-    public void AddLowFilter() { lowPassFilter.enabled = true; }
 
-    public void RemoveLowFilter() { lowPassFilter.enabled = false; }
-
-    public void SetNormalizedDistortion(int currentIndex, int maxIndex)
+    public void SetQuestionsDistortion(int currentIndex, int maxIndex)
     {
         float normalizedIndex = (float)currentIndex / (float)maxIndex;
-
-        SetDistortionStats(LerpStats(StartGameStats, EndGameStats, normalizedIndex));
+        SetDistortionStats(musicDistortionStats.LerpStats(musicStats_startQuestion, musicStats_endQuestion, normalizedIndex));
     }
-    public void startBillionareDistortion()
-    {
-        StartCoroutine(billionareMusicTransition());
-    }
-    IEnumerator billionareMusicTransition()
-    {
-        AddLowFilter();
-        float timer = 0;
 
-        while (timer < secondsToTransitionToBillionare)
-        {
-            timer += Time.deltaTime;
-            float normalizedIndex = timer/ secondsToTransitionToBillionare;
-
-            SetDistortionStats(LerpStats(EndGameStats, BillionareStats, normalizedIndex));
-
-            yield return null;
-        }
-    }
-    
     [Header("MainMenu transition")]
-    [SerializeField] musicDistortionStats mainMenuStats;
-    [SerializeField] float seconds_MainMenuTransition;
+    public float seconds_TransitionToStartPlaying;
+    public float seconds_TransitionToMainMenu;
     private void Start()
     {
-        AddLowFilter();
-        SetDistortionStats(mainMenuStats);
         audioSource.Play();
     }
-    public void startRegularMusicTransition()
+  
+    public void TransitionFromCurrentStats(musicDistortionStats targetStats, float transitionTime)
     {
-        StartCoroutine(startplayingTransition());
+        musicDistortionStats baseStats = musicDistortionStats.CopyStats(musicStats_current);
+        TransitionStats(baseStats, targetStats, transitionTime);
     }
-    IEnumerator startplayingTransition()
+    public void TransitionStats(musicDistortionStats statsA, musicDistortionStats statsB, float transitionTime)
     {
-        RemoveLowFilter();
-        musicDistortionStats baseStats = mainMenuStats;
-        float timer = 0;
-        while (timer < seconds_MainMenuTransition)
-        {
-            timer += Time.deltaTime;
-            float normalizedTime = timer / seconds_MainMenuTransition;
+        if(currentTransition != null) { StopCoroutine(currentTransition); }
+        currentTransition = StartCoroutine(transitionCoroutine());
 
-            SetDistortionStats(LerpStats(baseStats, StartGameStats, normalizedTime));
-            yield return null;
+        IEnumerator transitionCoroutine()
+        {
+            float timer = 0;
+            while (timer < transitionTime)
+            {
+                timer += Time.deltaTime;
+                SetDistortionStats(musicDistortionStats.LerpStats(statsA, statsB, timer / transitionTime));
+                yield return null;
+            }
+            SetDistortionStats(statsB);
         }
-        
     }
-    void SetDistortionStats(musicDistortionStats stats)
+    public void SetDistortionStats(musicDistortionStats stats)
     {
         audioSource.pitch = stats.Pitch;
         audioSource.volume = stats.Volume;
         distortionFilter.distortionLevel = stats.Distortion;
         echoFilter.delay = stats.Delay;
         echoFilter.decayRatio = stats.Decay;
+        lowPassFilter.enabled = stats.hasLowerFilter;
+        musicStats_current = stats;
     }
-    musicDistortionStats LerpStats(musicDistortionStats statsA, musicDistortionStats statsB, float t)
+    public void AddLowFilter() 
     {
-        musicDistortionStats newStats = new musicDistortionStats();
-        newStats.Volume = Mathf.Lerp(statsA.Volume, statsB.Volume, t);
-        newStats.Pitch = Mathf.Lerp(statsA.Pitch, statsB.Pitch, t);
-        newStats.Distortion = Mathf.Lerp(statsA.Distortion, statsB.Distortion, t);
-        newStats.Delay = Mathf.Lerp(statsA.Delay, statsB.Delay, t);
-        newStats.Decay = Mathf.Lerp(statsA.Decay, statsB.Decay, t);
-
-        return newStats;
+        musicDistortionStats filteredStats =  musicStats_current;
+        filteredStats.hasLowerFilter = true;
+        SetDistortionStats(filteredStats);
+    }
+    public void RemoveLowFilter() 
+    {
+        musicDistortionStats filteredStats = musicStats_current;
+        filteredStats.hasLowerFilter = false;
+        SetDistortionStats(filteredStats);
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,42 +7,49 @@ using UnityEngine.Rendering.Universal;
 
 public class PostProcessingController : MonoBehaviour
 {
-    [SerializeField] float start_chromaticIntensity, end_chromaticIntensity, start_vignetteIntensity, end_vignetteIntensity;
+    public  postProcesInfo postPoinfo_startQuestions, postPoInfo_endQuestion, postPoInfo_MainMenu, postPoInfo_GameOverScreens;
     [Header("Other references")]
     [SerializeField] Volume postprocessVolum;
-    [SerializeField] bool ignoreEverything;
+    ChromaticAberration chromaticAberration;
+    Vignette vignette;
+    FilmGrain filmGrain;
+    [Serializable]
+    public class postProcesInfo
+    {
+        public float chromaticIntensity;
+        public float vignetteIntensity;
+        public float grainIntensity;
+
+        public static postProcesInfo LerpInfos(postProcesInfo infoA, postProcesInfo infoB, float T)
+        {
+            postProcesInfo newInfo = new postProcesInfo();
+            newInfo.chromaticIntensity = Mathf.Lerp(infoA.chromaticIntensity, infoB.chromaticIntensity, T);
+            newInfo.vignetteIntensity = Mathf.Lerp(infoA.vignetteIntensity, infoB.vignetteIntensity, T);
+            newInfo.grainIntensity = Mathf.Lerp(infoA.grainIntensity, infoB.grainIntensity, T);
+            return newInfo;
+        }
+    }
     private void Awake()
     {  
-        SetPostProcessing(0, 1);
+        if(postprocessVolum.profile.TryGet(out ChromaticAberration chrom)) { chromaticAberration = chrom; }
+        if(postprocessVolum.profile.TryGet(out Vignette vig)) { vignette = vig; }
+        if(postprocessVolum.profile.TryGet(out FilmGrain film)) { filmGrain = film; }
+
+        
+
+        SetQuestionsPostProcessing(0, 1);
     }
-    public void SetPostProcessing(int currentIndex, int maxIndex)
+    public void SetQuestionsPostProcessing(int currentIndex, int maxIndex)
     {
-        if (ignoreEverything) { return; }
         float normalizedIndex = (float)currentIndex / (float)maxIndex;
 
-        if (postprocessVolum.profile.TryGet(out ChromaticAberration chromaticAberation))
-        {
-            chromaticAberation.intensity.value = Mathf.Lerp(start_chromaticIntensity, end_chromaticIntensity, normalizedIndex);
-            Debug.Log("Chromatic aberration intensity: "+chromaticAberation.intensity); 
-        }
-        if(postprocessVolum.profile.TryGet(out Vignette vignette))
-        {
-            vignette.intensity.value = Mathf.Lerp(start_vignetteIntensity, end_vignetteIntensity, normalizedIndex);
-            Debug.Log("Vignette intensity: " + vignette.intensity);
-        }
+        postProcesInfo lerpedInfo = postProcesInfo.LerpInfos(postPoinfo_startQuestions, postPoInfo_endQuestion, normalizedIndex);
+        SetPostProcesing(lerpedInfo);
     }
-    public void AddFilmGrain()
+    public void SetPostProcesing(postProcesInfo info)
     {
-        if (postprocessVolum.profile.TryGet(out FilmGrain filmGrain))
-        {
-            filmGrain.active = true;
-        }
-    }
-    public void RemoveFilGrain()
-    {
-        if (postprocessVolum.profile.TryGet(out FilmGrain filmGrain))
-        {
-            filmGrain.active = false;
-        }
+        chromaticAberration.intensity.value = info.chromaticIntensity;
+        vignette.intensity.value = info.vignetteIntensity;
+        filmGrain.intensity.value = info.grainIntensity;
     }
 }

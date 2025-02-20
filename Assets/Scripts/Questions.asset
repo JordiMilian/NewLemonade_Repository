@@ -16,6 +16,7 @@ MonoBehaviour:
   - Title: Better product 1
     MoneyGoal: 43.283382
     QuestionText: You saved enough money to upgrade your lemon squeezer.
+    dudeToAppear: 0
     answer1:
       answerTxt: Buy a manual squeezer.
       pricePercentOfGoal: 30
@@ -31,6 +32,7 @@ MonoBehaviour:
   - Title: Automation 1
     MoneyGoal: 124.89674
     QuestionText: We could set up a cup delivery service in the neighborhood.
+    dudeToAppear: 1
     answer1:
       answerTxt: Ask my friend James for help with his bike.
       pricePercentOfGoal: 15
@@ -46,6 +48,7 @@ MonoBehaviour:
   - Title: Better transportation 1
     MoneyGoal: 360.3969
     QuestionText: Walking to the store is annoying. Let's get something faster.
+    dudeToAppear: 9
     answer1:
       answerTxt: Get a thrifted bicicle.
       pricePercentOfGoal: 40
@@ -62,6 +65,7 @@ MonoBehaviour:
     MoneyGoal: 1039.9465
     QuestionText: The store in my street is a bit pricey. Maybe I could find something
       cheaper around.
+    dudeToAppear: 3
     answer1:
       answerTxt: Go to the local market and sweet-talk the farmer
       pricePercentOfGoal: 5
@@ -78,6 +82,7 @@ MonoBehaviour:
     MoneyGoal: 3000.827
     QuestionText: Let's bottle up the lemonade and sell that instead of just cups.
       Which material should we use?
+    dudeToAppear: 5
     answer1:
       answerTxt: Glass Bottle
       pricePercentOfGoal: 40
@@ -94,6 +99,7 @@ MonoBehaviour:
     MoneyGoal: 8659.0625
     QuestionText: The old delivery service is getting overwhelmed. How should we
       expand it?
+    dudeToAppear: 2
     answer1:
       answerTxt: I'll go myself when I can.
       pricePercentOfGoal: 15
@@ -109,6 +115,7 @@ MonoBehaviour:
   - Title: Better Transportation 2
     MoneyGoal: 24986.234
     QuestionText: 'Let''s get something bigger to move our lemons. '
+    dudeToAppear: 0
     answer1:
       answerTxt: Ask my friend Sergio for his van
       pricePercentOfGoal: 30
@@ -125,6 +132,7 @@ MonoBehaviour:
     MoneyGoal: 72099.25
     QuestionText: At this rate I could get cheaper lemons in bulk. Who should sell
       them to me?
+    dudeToAppear: 7
     answer1:
       answerTxt: Meet local farmers specialised in citrus.
       pricePercentOfGoal: 10
@@ -141,6 +149,7 @@ MonoBehaviour:
     MoneyGoal: 208046.62
     QuestionText: Electric vehicles seem to be getting popular. Should we switch
       to that?
+    dudeToAppear: 3
     answer1:
       answerTxt: Sure! Maybe they are better for the environment.
       pricePercentOfGoal: 50
@@ -157,6 +166,7 @@ MonoBehaviour:
     MoneyGoal: 600330.75
     QuestionText: People are getting tired of the old recipe. Let's try something
       new.
+    dudeToAppear: 5
     answer1:
       answerTxt: What if we use limes instead?
       pricePercentOfGoal: 50
@@ -172,6 +182,7 @@ MonoBehaviour:
   - Title: Better Transportation 3
     MoneyGoal: 1732289.8
     QuestionText: Let's get 10 more trucks. But who should drive them?
+    dudeToAppear: 8
     answer1:
       answerTxt: Just hire 10 truckers
       pricePercentOfGoal: 80
@@ -187,6 +198,7 @@ MonoBehaviour:
   - Title: Better product 3.5
     MoneyGoal: 4998624
     QuestionText: Our workers seem to be unionizing. Do we take action?
+    dudeToAppear: 5
     answer1:
       answerTxt: Improve our workers conditions.
       pricePercentOfGoal: 60
@@ -203,6 +215,7 @@ MonoBehaviour:
     MoneyGoal: 14423824
     QuestionText: Growing our own lemons would be more efficient at this point. Where
       do we build the farms?
+    dudeToAppear: 6
     answer1:
       answerTxt: Build a Farm near the Factory
       pricePercentOfGoal: 50
@@ -219,6 +232,7 @@ MonoBehaviour:
     MoneyGoal: 41620790
     QuestionText: It's getting a bit hotter than usual. Maybe we could do something
       about that?
+    dudeToAppear: 9
     answer1:
       answerTxt: Reserch sustainable materials for our products.
       pricePercentOfGoal: 80
@@ -234,6 +248,7 @@ MonoBehaviour:
   - Title: Automation 4
     MoneyGoal: 120099250
     QuestionText: How do we deal with international shipping?
+    dudeToAppear: 8
     answer1:
       answerTxt: Use the existing national railway infrastructure.
       pricePercentOfGoal: 10
@@ -250,6 +265,7 @@ MonoBehaviour:
     MoneyGoal: 346553440
     QuestionText: Other smaller lemonade companies are starting to get popular. What
       to do?
+    dudeToAppear: 5
     answer1:
       answerTxt: Lower our prices to be more competitive
       pricePercentOfGoal: 20
@@ -265,6 +281,7 @@ MonoBehaviour:
   - Title: Final Question
     MoneyGoal: 1.0000003e+9
     QuestionText: GAME OVER
+    dudeToAppear: 0
     answer1:
       answerTxt: GAME OVER
       pricePercentOfGoal: 0
