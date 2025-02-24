@@ -1874,6 +1874,7 @@ MonoBehaviour:
   startingPosTf: {fileID: 325331243}
   MaxDisplayPoints: 400
   pointsPerSmooth: 8
+  allPoints: []
   stopGraph: 0
   GoalBarPrefab: {fileID: 1457215596}
   currentBarColor: {r: 0.34607512, g: 0.7264151, b: 0.71856266, a: 0.8}
@@ -10100,7 +10101,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -19.9}
+  m_AnchoredPosition: {x: 0, y: -4.6}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1503675342
@@ -10123,9 +10124,19 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "However, global warming has turned the planet uninhabitable. \nThe temperature
-    has risen over 50%, there is no more oil to extract and all sources of water
-    are filled with trash.\n\n There is no one left to sell lemonade to.\n\n"
+  m_text: 'However, global warming has turned the planet into a wasteland
+
+    The
+    temperature has risen more than 20 degrees, the oceans have risen more than 10
+    meters, all sources of water are filled with trash, there is no more oil to extract
+    and 90% of wild animals have gone extinct.
+
+
+    There is no one left to sell
+    lemonade to.
+
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 694cf7d62e9cbeb4388addf7ca0af54a, type: 2}
   m_sharedMaterial: {fileID: -6981942644473072727, guid: 694cf7d62e9cbeb4388addf7ca0af54a, type: 2}
@@ -10134,7 +10145,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 16777215
+    rgba: 4294967295
   m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -13227,7 +13238,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1953924757
 MonoBehaviour:
   m_ObjectHideFlags: 0

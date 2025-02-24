@@ -111,7 +111,7 @@ MonoBehaviour:
       pricePercentOfGoal: 75
       price: 6494.297
       upgradeType: 5
-      variable: 30
+      variable: 12
   - Title: Better Transportation 2
     MoneyGoal: 24986.234
     QuestionText: 'Let''s get something bigger to move our lemons. '

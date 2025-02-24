@@ -17,7 +17,7 @@ public class GraphDisplayer : MonoBehaviour
     [SerializeField] Transform startingPosTf;
     [SerializeField] int MaxDisplayPoints = 20;
     [SerializeField] int pointsPerSmooth;
-    List<pointInfo> allPoints = new List<pointInfo>();
+    [SerializeField] List<pointInfo> allPoints = new List<pointInfo>();
     public bool stopGraph;
     [Header("Goal bars manager")]
     [SerializeField] GameObject GoalBarPrefab;
@@ -27,12 +27,14 @@ public class GraphDisplayer : MonoBehaviour
     public AudioClip AudioClip_GraphTransition;
     [SerializeField] Transform Tf_lemonIcon;
 
+    [Serializable]
     public class pointInfo
     {
         public Vector3 currentPos;
         public Vector3 smoothPos;
         public float money;
         public bool isKeyPoint;
+        public int pointToSmoothAround;
     }
    
     float timer;
@@ -64,6 +66,16 @@ public class GraphDisplayer : MonoBehaviour
             makeNewPointAndDisplay();
             Tf_lemonIcon.position = allPoints[allPoints.Count - 1].smoothPos + lineRenderer.transform.position;
         }
+    }
+    public void HideGraph() 
+    {
+        lineRenderer.enabled = false;
+        Tf_lemonIcon.gameObject.SetActive(false);
+    }
+    public void ShowGraph()
+    {
+        lineRenderer.enabled = true;
+        Tf_lemonIcon.gameObject.SetActive(true);
     }
     public void makeNewPointAndDisplay(bool isKeyPoint = false)
     {
@@ -167,40 +179,46 @@ public class GraphDisplayer : MonoBehaviour
         void RenderLineRenderer()
         {
             lineRenderer.positionCount = allPoints.Count;
-            lineRenderer.SetPositions(smoothOutPositions(allPoints.ToArray()));
+            lineRenderer.SetPositions(forwardSmooth(allPoints.ToArray()));
         }
 
-        Vector3[] smoothOutPositions(pointInfo[] points)
+        
+        Vector3[] forwardSmooth(pointInfo[] points)
         {
             List<Vector3> smoothedVectors = new List<Vector3>();
 
             for (int p = 0; p < points.Length; p++)
             {
-                int thisPointsPerSmooth = pointsPerSmooth;
+                int finalPointsPerSmooth = pointsPerSmooth;
 
-                int posiblePoints = points.Length - p;
-                if( posiblePoints < pointsPerSmooth )
+                //Too close to end of array
+                int posiblePoints = points.Length - (p + 1);
+                if (posiblePoints < pointsPerSmooth)
                 {
-                    thisPointsPerSmooth = posiblePoints;
+                    finalPointsPerSmooth = posiblePoints;
                 }
 
-                if (p < thisPointsPerSmooth)
+                //Too close to keypoint
+                for (int k = 0; k < finalPointsPerSmooth; k++)
                 {
-                    points[p].smoothPos = points[p].currentPos;
-                    smoothedVectors.Add(points[p].smoothPos);
-                    continue;
+                    if (points[p + k].isKeyPoint)
+                    {
+                        finalPointsPerSmooth = k;
+                        break;
+                    }
                 }
-                
+                points[p].pointToSmoothAround = finalPointsPerSmooth; //This is for debugging
 
+                //Trobar la mitja entre tots els punts davant
                 float allAddedHeights = points[p].currentPos.y;
-                for (int i = 0; i < thisPointsPerSmooth; i++) 
+                for (int i = 0; i < finalPointsPerSmooth; i++)
                 {
-                    allAddedHeights += points[p - i].currentPos.y;
-                    allAddedHeights += points[p + i].currentPos.y;
+                    allAddedHeights += points[p + (i + 1)].currentPos.y;
                 }
-                float mediaHeight = allAddedHeights / ((thisPointsPerSmooth * 2)+1);
+                float mediaHeight = allAddedHeights / (finalPointsPerSmooth + 1);
                 points[p].smoothPos = new Vector3(points[p].currentPos.x, mediaHeight, 0);
                 smoothedVectors.Add(points[p].smoothPos);
+
             }
             return smoothedVectors.ToArray();
         }

@@ -153,11 +153,13 @@ public class GameController : MonoBehaviour
     {
         int tutorialPhasesPased = 0;
         TutorialCanvas.SetActive(true);
+        if (skipTutorial) { graphDisplayer.HideGraph(); }
         yield return StartCoroutine(LensDistortionPopUp());
 
         graphDisplayer.StartDisplaying();
         if (skipTutorial) 
-        { 
+        {
+            graphDisplayer.ShowGraph();
             TutorialCanvas.SetActive(false);
             enablePurchaseButtons();
             pauseAutomising = false;
@@ -165,6 +167,7 @@ public class GameController : MonoBehaviour
             yield break;
         }
         yield return new WaitForSeconds(1);
+       
         Animator_Tutorial.SetTrigger("nextShadow");
         graphDisplayer.stopGraph = true;
         pauseTimer();
@@ -177,11 +180,12 @@ public class GameController : MonoBehaviour
         Animator_Tutorial.SetTrigger("nextShadow");
         yield return new WaitForSeconds(0.5f);
         tutorialPhasesPased++;
-        if(tutorialPhasesPased < TutorialPhasesCount) { goto Waitagain; }
+        if(tutorialPhasesPased < TutorialPhasesCount-1) { goto Waitagain; }
 
         skipTutorial = true;
         pauseAutomising = false;
         restartTimer();
+        graphDisplayer.StartDisplaying();
         graphDisplayer.stopGraph = false;
         enablePurchaseButtons();
     }
@@ -613,7 +617,7 @@ public class GameController : MonoBehaviour
             BillionareScreen();
             graphDisplayer.stopGraph = true;
             StopAllHolds();
-            OnMoneyUpdated -= onMoneyUpdated;
+            pauseAutomising = true;
             return;
         }
 
