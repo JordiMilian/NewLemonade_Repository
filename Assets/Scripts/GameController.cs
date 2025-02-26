@@ -5,12 +5,22 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
 
+public enum gameStates
+{
+    MainMenu,
+    Playing,
+    Tutorial,
+    Question,
+    PauseMenu,
+    Bankrupt,
+    Billionare
+}
 public class GameController : MonoBehaviour
 {
-    
     float currentMoney;
+
     event Action<float> OnMoneyUpdated;
     public float CurrentMoney
     {
@@ -48,6 +58,7 @@ public class GameController : MonoBehaviour
     [SerializeField] PostProcessingController postProController;
     [SerializeField] AudioDistortionController distortionController;
     [SerializeField] GameObject MainMenuCanvas;
+    [SerializeField] Animator anim_enoughMoney, anim_enoughLemons;
 
     [Header("Game over screen canvases")]
     [SerializeField] GameObject GO_BillionareScreenRoot;
@@ -76,6 +87,97 @@ public class GameController : MonoBehaviour
         public UpgradeTypes upgradeType;
         public float variable;
     }
+    #region GAME STATES
+    public Stack<gameStates> gameStatesStack = new Stack<gameStates>();
+
+    public void AddNewState(gameStates newState)
+    {
+        gameStatesStack.Push(newState);
+        ManageCurrentState();
+    }
+    void ManageCurrentState()
+    {
+        switch (gameStatesStack.Peek())
+        {
+            case gameStates.MainMenu:
+                showMainMenu();
+                break;
+            case gameStates.Playing:
+                UnpauseGame();
+                showPurchaseButtons();
+                enablePurchaseButtons();
+                graphDisplayer.stopGraph = false;
+                break;
+            case gameStates.Tutorial:
+                TutorialCanvas.SetActive(true);
+                showPurchaseButtons();
+                break;
+            case gameStates.Question:
+                showQuestionUI();
+                disablePurchaseButtons();
+                PauseGame();
+                break;
+            case gameStates.PauseMenu:
+                PauseGame();
+                Canvas_Pause.gameObject.SetActive(true);
+                break;
+            case gameStates.Bankrupt:
+                PauseGame();
+                BankrupedScreen();
+                break;
+            case gameStates.Billionare:
+                PauseGame();
+                BillionareScreen();
+                break;
+        }
+        Debug.Log("Entered state: " + gameStatesStack.Peek());
+    }
+    public void CloseCurrentState()
+    {
+        gameStates currentState = gameStatesStack.Peek();
+
+        switch (currentState)
+        {
+            case gameStates.MainMenu:
+                break;
+            case gameStates.Playing:
+                PauseGame();
+                break;
+            case gameStates.Tutorial:
+                TutorialCanvas.SetActive(false);
+                break;
+            case gameStates.Question:
+                hideQuestionUI();
+                Dude_Controller.Instance.CallHideDude();
+                UpdateTextDisplays();
+                break;
+            case gameStates.PauseMenu:
+                UnpauseGame();
+                Canvas_Pause.gameObject.SetActive(false);
+                break;
+            case gameStates.Bankrupt:
+                GO_BankruptScreenRoot.SetActive(false);
+                break;
+            case gameStates.Billionare:
+                GO_BillionareScreenRoot.SetActive(false);
+                break;
+        }
+        gameStatesStack.Pop();
+        Debug.Log("Closed state: " + currentState + " Now in state: " + gameStatesStack.Peek());
+
+        ManageCurrentState();
+    }
+    public void closeStatesUntilReachingState(gameStates targetState)
+    {
+        while (gameStatesStack.Count > 1)
+        {
+            if(gameStatesStack.Peek() == targetState) { break; }
+
+            CloseCurrentState();
+        }
+        ManageCurrentState();
+    }
+    #endregion
     private void Start()
     {
         GO_BillionareScreenRoot.SetActive(false);
@@ -93,10 +195,26 @@ public class GameController : MonoBehaviour
         UpdateTextDisplays();
         TutorialCanvas.SetActive(false);
 
-        showMainMenu();
+        AddNewState(gameStates.MainMenu);
+
         restartStats();
     }
     #region MAIN MENU
+    void PauseGame()
+    {
+        pauseAutomising = true;
+        pauseTimer();
+        graphDisplayer.stopGraph = true;
+        disablePurchaseButtons();
+        StopAllHolds();
+    }
+    void UnpauseGame()
+    {
+        pauseAutomising = false;
+        resumeTimer();
+        graphDisplayer.stopGraph = false;
+        enablePurchaseButtons();
+    }
     public void showMainMenu()
     {
         MainMenuCanvas.SetActive(true);
@@ -119,28 +237,27 @@ public class GameController : MonoBehaviour
         nextQuestionIndex = 0;
         UpdateTextDisplays();
     }
-    public void StartPlayingButton()
+    public void Button_StartPlaying()
     {
         restartStats();
         restartTimer();
-        showPurchaseButtons();
-        
-        pauseAutomising = true;
-        
+       
         MainMenuCanvas.SetActive(false);
         musicControl.TransitionStats(musicControl.musicStats_MainMenu, musicControl.musicStats_startQuestion, musicControl.seconds_TransitionToStartPlaying);
         SFX_PlayerSingleton.Instance.playSFX(graphDisplayer.AudioClip_GraphTransition);
-        StartCoroutine(StartGameCoroutine());
+        StartCoroutine(BeginGameCoroutine());
         postProController.SetPostProcesing(postProController.postPoinfo_startQuestions);
     }
     public void Button_RestartGame()
     {
-        GO_BankruptScreenRoot.SetActive(false);
         restartStats();
         restartTimer();
+        closeStatesUntilReachingState(gameStates.Playing);
+
         musicControl.TransitionFromCurrentStats(musicControl.musicStats_startQuestion, 1);
         postProController.SetPostProcesing(postProController.postPoinfo_startQuestions);
-        StartCoroutine(StartGameCoroutine());
+
+        StartCoroutine(BeginGameCoroutine());
     }
     [Header("Start Game stuff")]
     [SerializeField] AnimationCurve FieldOfViewCurve;
@@ -149,45 +266,50 @@ public class GameController : MonoBehaviour
     [SerializeField] int TutorialPhasesCount;
     [SerializeField] GameObject TutorialCanvas;
     public bool skipTutorial;
-    IEnumerator StartGameCoroutine()
+    IEnumerator BeginGameCoroutine()
     {
         int tutorialPhasesPased = 0;
-        TutorialCanvas.SetActive(true);
         if (skipTutorial) { graphDisplayer.HideGraph(); }
         yield return StartCoroutine(LensDistortionPopUp());
 
-        graphDisplayer.StartDisplaying();
+       
         if (skipTutorial) 
         {
+            graphDisplayer.RestartDisplaying();
+            AddNewState(gameStates.Playing);
+
             graphDisplayer.ShowGraph();
             TutorialCanvas.SetActive(false);
-            enablePurchaseButtons();
-            pauseAutomising = false;
-            graphDisplayer.stopGraph = false;
             yield break;
         }
+        AddNewState(gameStates.Tutorial);
+        graphDisplayer.RestartDisplaying();
         yield return new WaitForSeconds(1);
-       
-        Animator_Tutorial.SetTrigger("nextShadow");
-        graphDisplayer.stopGraph = true;
-        pauseTimer();
+
+        tutorialPhasesPased++;
+        Animator_Tutorial.SetInteger("phases", tutorialPhasesPased); ;
+        PauseGame();
     Waitagain:
-        
-        while(Input.GetMouseButtonDown(0) == false)
+        Debug.Log("can transition tutorial phase");
+        while (Input.GetMouseButtonDown(0) == false)
         {
             yield return null;
         }
-        Animator_Tutorial.SetTrigger("nextShadow");
-        yield return new WaitForSeconds(0.5f);
+
         tutorialPhasesPased++;
-        if(tutorialPhasesPased < TutorialPhasesCount-1) { goto Waitagain; }
+        Animator_Tutorial.SetInteger("phases",tutorialPhasesPased);
+        Debug.Log("next shadow: " + tutorialPhasesPased);
+        yield return new WaitForSeconds(0.75f);
+       
+        
+        if (tutorialPhasesPased < TutorialPhasesCount) { goto Waitagain; }
 
         skipTutorial = true;
         pauseAutomising = false;
         restartTimer();
-        graphDisplayer.StartDisplaying();
-        graphDisplayer.stopGraph = false;
-        enablePurchaseButtons();
+        graphDisplayer.RestartDisplaying();
+
+        AddNewState(gameStates.Playing);
     }
     IEnumerator LensDistortionPopUp()
     {
@@ -201,7 +323,7 @@ public class GameController : MonoBehaviour
         }
         lensDistortion.intensity.value = 0;
     }
-    public void ExitGame()
+    public void Button_ExitGame()
     {
         Application.Quit();
     }
@@ -218,6 +340,10 @@ public class GameController : MonoBehaviour
     float holdBuyTimer, holdSellTimner;
     private void Update()
     {
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            onPausePressed();
+        }
         if (Input.GetKeyDown(KeyCode.M))
         {
             CurrentMoney = questionsHolder.questions[nextQuestionIndex].MoneyGoal;
@@ -268,7 +394,11 @@ public class GameController : MonoBehaviour
 
         if (affordableLemons < LemonsPerBuy)
         {
-            if(affordableLemons == 0) { SFX_PlayerSingleton.Instance.playSFX(AudioClip_CantBuy,0.1f); return; }
+            if(affordableLemons == 0) 
+            { 
+                SFX_PlayerSingleton.Instance.playSFX(AudioClip_CantBuy,0.1f);
+                anim_enoughMoney.SetTrigger("appear");
+                return; }
             CurrentMoney -= affordableLemons * BuyingPrice;
             CurrentLemons += affordableLemons;
         }
@@ -285,7 +415,11 @@ public class GameController : MonoBehaviour
         if (arePurchaseDisabled) { return; }
         if (CurrentLemons < LemonsPerSell)
         {
-            if(CurrentLemons == 0) { SFX_PlayerSingleton.Instance.playSFX(AudioClip_CantBuy, 0.1f);return; }
+            if(CurrentLemons == 0)
+            { 
+                SFX_PlayerSingleton.Instance.playSFX(AudioClip_CantBuy, 0.1f);
+                anim_enoughLemons.SetTrigger("appear");
+                return; }
 
             CurrentMoney += CurrentLemons * SellingPrice;
             CurrentLemons -= CurrentLemons;
@@ -357,18 +491,15 @@ public class GameController : MonoBehaviour
         if (answer == 1) { ProcessAnswer(questions[nextQuestionIndex].answer1); }
         else if(answer == 2) { ProcessAnswer(questions[nextQuestionIndex].answer2); }
 
-        hideQuestionUI();
-        Dude_Controller.Instance.CallHideDude();
-        enablePurchaseButtons();
-        
-        restartTimer();
-        UpdateTextDisplays();
-
-        graphDisplayer.stopGraph = false;
-        graphDisplayer.updateGraphHeight();
-        graphDisplayer.displayGraph();
+        CloseCurrentState();
 
         SFX_PlayerSingleton.Instance.playSFX(AudioClip_AnswerPressed);
+        graphDisplayer.StartHeightTransition();
+        graphDisplayer.displayGraph();
+
+        restartTimer();
+
+        
 
         //
         void ProcessAnswer(Answer answer)
@@ -416,7 +547,7 @@ public class GameController : MonoBehaviour
             graphDisplayer.UpdateTimerBar(GameOverTimer / TimeToReachGoal);
             yield return null;
         }
-        BankrupedScreen();
+        AddNewState(gameStates.Bankrupt);
     }
     void BankrupedScreen()
     {
@@ -436,7 +567,7 @@ public class GameController : MonoBehaviour
     }
     void pauseTimer()
     {
-        StopCoroutine(currentTimer);
+        if (currentTimer != null) { StopCoroutine(currentTimer); }
     }
     void restartTimer()
     {
@@ -448,11 +579,6 @@ public class GameController : MonoBehaviour
     [Header("BARS")]
     [SerializeField] Transform moneySlider_size1;
     [SerializeField] Transform timerSlider_size01;
-    void updateMoneyBar(float goal, float currentMoney)
-    {
-        float normalizedAmount = Mathf.InverseLerp(0, goal, currentMoney);
-        moneySlider_size1.localScale = new Vector3(normalizedAmount, 1, 1);
-    }
     [SerializeField] Transform TfTimerBar;
     Vector2 timerBar_startingPos, timerBar_endPos;
     void SetUpTimerBar()
@@ -469,7 +595,7 @@ public class GameController : MonoBehaviour
     void UpdateTextDisplays()
     {
         TMP_moneyDisplay.text = floatToMoneyString(CurrentMoney);
-        TMP_Lemons.text = CurrentLemons.ToString();
+        TMP_Lemons.text = CurrentLemons.ToString() + " Lemons";
         TMP_Buy_Amount.text = "Buy "+ LemonsPerBuy.ToString() + " Lemons";
         TMP_Sell_Amount.text = "Sell " + LemonsPerSell.ToString() + " Lemonades";
         TMP_Buy_Price.text = floatToMoneyString(LemonsPerBuy * BuyingPrice);
@@ -575,7 +701,7 @@ public class GameController : MonoBehaviour
         TMP_Answer2_Upgrade.text = questions[nextQuestionIndex].answer2.variable.ToString();
         TMP_CurrentMoney_QuestionUI.text = floatToMoneyString(currentMoney);
 
-        Animator_QuestionUI.SetTrigger("Appear");
+        
         musicControl.AddLowFilter();
         
         Debug.Log("Goal reched: " + nextQuestionIndex);
@@ -602,7 +728,6 @@ public class GameController : MonoBehaviour
     }
     void onMoneyUpdated(float amount)
     {
-        updateMoneyBar(questions[nextQuestionIndex].MoneyGoal, amount);
         if (amount >= questions[nextQuestionIndex].MoneyGoal)
         {
             OnGoalReached();
@@ -610,23 +735,20 @@ public class GameController : MonoBehaviour
     }
     void OnGoalReached()
     {
-        pauseTimer();
-        disablePurchaseButtons();
         if(nextQuestionIndex == questionsHolder.questions.Count -1)
         {
-            BillionareScreen();
-            graphDisplayer.stopGraph = true;
-            StopAllHolds();
-            pauseAutomising = true;
+            AddNewState(gameStates.Billionare);
             return;
         }
 
-        showQuestionUI();
+
         graphDisplayer.makeNewPointAndDisplay(true);
-        graphDisplayer.stopGraph = true;
+
         
-        StopAllHolds();
         SFX_PlayerSingleton.Instance.playSFX(AudioClip_GoalReached);
+        
+        AddNewState(gameStates.Question);
+        Animator_QuestionUI.SetTrigger("Appear");
     }
     [SerializeField] BillionareScreenController billionareScreenController;
     void BillionareScreen()
@@ -639,5 +761,41 @@ public class GameController : MonoBehaviour
         postProController.SetPostProcesing(postProController.postPoInfo_GameOverScreens);
     }
 
+    #endregion
+    #region PAUSE MENU
+    [Header("Pause Menu")]
+    [SerializeField] Canvas Canvas_Pause;
+    [SerializeField] Slider slider_volume;
+    public float GeneralVolumeMultiplier;
+    void onPausePressed()
+    {
+        if (gameStatesStack.Peek() == gameStates.PauseMenu) { CloseCurrentState(); return; }
+
+        gameStates currentState = gameStatesStack.Peek();
+        if(currentState == gameStates.MainMenu || currentState == gameStates.Bankrupt || currentState == gameStates.Billionare ) 
+        { return; }
+
+        AddNewState(gameStates.PauseMenu);
+    }
+    public void button_pause_resumeGame()
+    {
+        CloseCurrentState();
+        
+    }
+    public void button_pause_restartGame()
+    {
+        musicControl.RestartMusicLoop();
+        Button_RestartGame();
+
+    }
+    public void button_pause_exitGame()
+    {
+        Button_ExitGame();
+    }
+    public void slider_OnAudioValueChanged()
+    {
+        GeneralVolumeMultiplier = slider_volume.value;
+        musicControl.UpdateVolume();
+    }
     #endregion
 }

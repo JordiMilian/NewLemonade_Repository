@@ -39,7 +39,7 @@ public class GraphDisplayer : MonoBehaviour
    
     float timer;
     float secondsPerPoint;
-    public void StartDisplaying()
+    public void RestartDisplaying()
     {
         secondsPerPoint = 1 / PointsPerSeconds;
         allPoints = new List<pointInfo>();
@@ -99,7 +99,7 @@ public class GraphDisplayer : MonoBehaviour
     }
     #region VERTICAL CONTROL
     [SerializeField] float timeToVerticalTransitions;
-    public void updateGraphHeight()
+    public void StartHeightTransition()
     {
         StartCoroutine(progresiveHeightChange(
             questionsHolder.questions[gameController.nextQuestionIndex - 1].MoneyGoal,

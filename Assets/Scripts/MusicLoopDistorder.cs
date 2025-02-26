@@ -5,10 +5,11 @@ using UnityEngine;
 
 public class MusicLoopDistorder : MonoBehaviour
 {
-    [SerializeField] AudioSource audioSource;
+    public AudioSource audioSource;
     [SerializeField] AudioDistortionFilter distortionFilter;
     [SerializeField] AudioEchoFilter echoFilter;
     [SerializeField] AudioLowPassFilter lowPassFilter;
+    [SerializeField] GameController gameController;
 
     public musicDistortionStats musicStats_startQuestion, musicStats_endQuestion, musicStats_Billionare, musicStats_MainMenu;
     public musicDistortionStats musicStats_current;
@@ -90,7 +91,7 @@ public class MusicLoopDistorder : MonoBehaviour
     public void SetDistortionStats(musicDistortionStats stats)
     {
         audioSource.pitch = stats.Pitch;
-        audioSource.volume = stats.Volume;
+        audioSource.volume = stats.Volume * gameController.GeneralVolumeMultiplier;
         distortionFilter.distortionLevel = stats.Distortion;
         echoFilter.delay = stats.Delay;
         echoFilter.decayRatio = stats.Decay;
@@ -108,5 +109,14 @@ public class MusicLoopDistorder : MonoBehaviour
         musicDistortionStats filteredStats = musicStats_current;
         filteredStats.hasLowerFilter = false;
         SetDistortionStats(filteredStats);
+    }
+    public void UpdateVolume()
+    {
+        audioSource.volume = musicStats_current.Volume * gameController.GeneralVolumeMultiplier;
+    }
+    public void RestartMusicLoop()
+    {
+        audioSource.Stop();
+        audioSource.Play();
     }
 }

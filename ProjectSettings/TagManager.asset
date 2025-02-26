@@ -56,3 +56,6 @@ TagManager:
   - name: EndGameScreens
     uniqueID: 3586367467
     locked: 0
+  - name: PauseMenu
+    uniqueID: 553246405
+    locked: 0

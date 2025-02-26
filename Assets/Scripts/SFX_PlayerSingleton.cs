@@ -8,6 +8,8 @@ public class SFX_PlayerSingleton : MonoBehaviour
 {
     List<AudioSource> audioSourcePool = new List<AudioSource>();
     [SerializeField] private int initialPoolSize = 5;
+    [SerializeField] GameController gameController;
+    
 
     public static SFX_PlayerSingleton Instance;
     private void Awake()
@@ -51,6 +53,7 @@ public class SFX_PlayerSingleton : MonoBehaviour
         audioSource.pitch += randomAdder;
         audioSource.pitch += addedPitch;
         audioSource.volume += addedVolum;
+        audioSource.volume = gameController.GeneralVolumeMultiplier;
 
         audioSource.clip = clip;
         audioSource.Play();
