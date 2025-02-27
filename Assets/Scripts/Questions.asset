@@ -19,16 +19,16 @@ MonoBehaviour:
     dudeToAppear: 0
     answer1:
       answerTxt: Buy a manual squeezer.
-      pricePercentOfGoal: 30
-      price: 12.985015
+      pricePercentOfGoal: 25
+      price: 10.820846
       upgradeType: 2
-      variable: 250
+      variable: 150
     answer2:
       answerTxt: Buy an electric squeezer.
       pricePercentOfGoal: 60
       price: 25.97003
       upgradeType: 2
-      variable: 350
+      variable: 300
   - Title: Automation 1
     MoneyGoal: 124.89674
     QuestionText: We could set up a cup delivery service in the neighborhood.
@@ -54,13 +54,13 @@ MonoBehaviour:
       pricePercentOfGoal: 40
       price: 144.15877
       upgradeType: 0
-      variable: 3
+      variable: 2
     answer2:
       answerTxt: Buy an Electric scooter.
       pricePercentOfGoal: 80
       price: 288.31754
       upgradeType: 0
-      variable: 7
+      variable: 4
   - Title: Better product 1.5
     MoneyGoal: 1039.9465
     QuestionText: The store in my street is a bit pricey. Maybe I could find something
@@ -77,7 +77,7 @@ MonoBehaviour:
       pricePercentOfGoal: 40
       price: 415.9786
       upgradeType: 2
-      variable: 375
+      variable: 300
   - Title: Better product 2
     MoneyGoal: 3000.827
     QuestionText: Let's bottle up the lemonade and sell that instead of just cups.
@@ -94,7 +94,7 @@ MonoBehaviour:
       pricePercentOfGoal: 30
       price: 900.24805
       upgradeType: 2
-      variable: 450
+      variable: 375
   - Title: Automation 2
     MoneyGoal: 8659.0625
     QuestionText: The old delivery service is getting overwhelmed. How should we
@@ -105,13 +105,13 @@ MonoBehaviour:
       pricePercentOfGoal: 15
       price: 1298.8594
       upgradeType: 5
-      variable: 5
+      variable: 4
     answer2:
-      answerTxt: Use a delivery App.
+      answerTxt: Use a Delivery App.
       pricePercentOfGoal: 75
       price: 6494.297
       upgradeType: 5
-      variable: 12
+      variable: 10
   - Title: Better Transportation 2
     MoneyGoal: 24986.234
     QuestionText: 'Let''s get something bigger to move our lemons. '
@@ -127,7 +127,7 @@ MonoBehaviour:
       pricePercentOfGoal: 85
       price: 21238.299
       upgradeType: 0
-      variable: 5
+      variable: 4
   - Title: Cheaper Buying Price 2
     MoneyGoal: 72099.25
     QuestionText: At this rate I could get cheaper lemons in bulk. Who should sell
@@ -144,7 +144,7 @@ MonoBehaviour:
       pricePercentOfGoal: 60
       price: 43259.55
       upgradeType: 2
-      variable: 450
+      variable: 400
   - Title: Automation 3
     MoneyGoal: 208046.62
     QuestionText: Electric vehicles seem to be getting popular. Should we switch
@@ -172,13 +172,13 @@ MonoBehaviour:
       pricePercentOfGoal: 50
       price: 300165.38
       upgradeType: 2
-      variable: 200
+      variable: 175
     answer2:
       answerTxt: Add artificial mango additives to the formula
       pricePercentOfGoal: 30
       price: 180099.22
       upgradeType: 2
-      variable: 400
+      variable: 350
   - Title: Better Transportation 3
     MoneyGoal: 1732289.8
     QuestionText: Let's get 10 more trucks. But who should drive them?
@@ -190,7 +190,7 @@ MonoBehaviour:
       upgradeType: 0
       variable: 3
     answer2:
-      answerTxt: Get self-driving AI trucks
+      answerTxt: Get self-driving trucks
       pricePercentOfGoal: 20
       price: 346457.94
       upgradeType: 0
@@ -201,16 +201,16 @@ MonoBehaviour:
     dudeToAppear: 5
     answer1:
       answerTxt: Improve our workers conditions.
-      pricePercentOfGoal: 60
-      price: 2999174.5
-      upgradeType: 0
-      variable: 3
+      pricePercentOfGoal: 80
+      price: 3998899.2
+      upgradeType: 2
+      variable: 200
     answer2:
-      answerTxt: Pay the union leaders away and hire AI "workers".
-      pricePercentOfGoal: 40
-      price: 1999449.6
-      upgradeType: 0
-      variable: 6
+      answerTxt: Pay the union leaders away and lay off everyone else
+      pricePercentOfGoal: 30
+      price: 1499587.2
+      upgradeType: 2
+      variable: 200
   - Title: Automation 3.5
     MoneyGoal: 14423824
     QuestionText: Growing our own lemons would be more efficient at this point. Where
@@ -230,15 +230,15 @@ MonoBehaviour:
       variable: 10
   - Title: Better Product 4
     MoneyGoal: 41620790
-    QuestionText: It's getting a bit hotter than usual. Maybe we could do something
-      about that?
+    QuestionText: People seem concerned about smothing called "global warming". Could
+      we do something about that?
     dudeToAppear: 9
     answer1:
       answerTxt: Reserch sustainable materials for our products.
       pricePercentOfGoal: 80
       price: 33296634
       upgradeType: 2
-      variable: 150
+      variable: 125
     answer2:
       answerTxt: Change our logo green and make a marketing campaing about it.
       pricePercentOfGoal: 10
@@ -254,13 +254,13 @@ MonoBehaviour:
       pricePercentOfGoal: 10
       price: 12009925
       upgradeType: 0
-      variable: 3
+      variable: 2
     answer2:
-      answerTxt: Make the city build an aerport near our new factory.
+      answerTxt: Build an aerport near our new factory.
       pricePercentOfGoal: 90
       price: 108089320
       upgradeType: 0
-      variable: 8
+      variable: 6
   - Title: Better Product 5
     MoneyGoal: 346553440
     QuestionText: Other smaller lemonade companies are starting to get popular. What

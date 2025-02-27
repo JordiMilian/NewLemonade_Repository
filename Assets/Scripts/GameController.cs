@@ -87,6 +87,27 @@ public class GameController : MonoBehaviour
         public UpgradeTypes upgradeType;
         public float variable;
     }
+    private void Start()
+    {
+        GO_BillionareScreenRoot.SetActive(false);
+        GO_BankruptScreenRoot.SetActive(false);
+
+        questions = questionsHolder.questions;
+        hidePurchaseButtons();
+        disablePurchaseButtons();
+        GO_QuestionsRoot.SetActive(false);
+        SetUpMoneyBar();
+        pauseAutomising = true;
+        SetUpTimerBar();
+        graphDisplayer.stopGraph = true;
+
+        UpdateTextDisplays();
+        TutorialCanvas.SetActive(false);
+
+        AddNewState(gameStates.MainMenu);
+
+        restartStats();
+    }
     #region GAME STATES
     public Stack<gameStates> gameStatesStack = new Stack<gameStates>();
 
@@ -107,8 +128,10 @@ public class GameController : MonoBehaviour
                 showPurchaseButtons();
                 enablePurchaseButtons();
                 graphDisplayer.stopGraph = false;
+                
                 break;
             case gameStates.Tutorial:
+                isTutorialPaused = false;
                 TutorialCanvas.SetActive(true);
                 showPurchaseButtons();
                 break;
@@ -119,6 +142,8 @@ public class GameController : MonoBehaviour
                 break;
             case gameStates.PauseMenu:
                 PauseGame();
+                musicControl.AddLowFilter();
+                bestTime_PauseCouting();
                 Canvas_Pause.gameObject.SetActive(true);
                 break;
             case gameStates.Bankrupt:
@@ -153,6 +178,8 @@ public class GameController : MonoBehaviour
                 break;
             case gameStates.PauseMenu:
                 UnpauseGame();
+                musicControl.RemoveLowFilter();
+                bestTime_ResumeCounting();
                 Canvas_Pause.gameObject.SetActive(false);
                 break;
             case gameStates.Bankrupt:
@@ -178,27 +205,6 @@ public class GameController : MonoBehaviour
         ManageCurrentState();
     }
     #endregion
-    private void Start()
-    {
-        GO_BillionareScreenRoot.SetActive(false);
-        GO_BankruptScreenRoot.SetActive(false);
-
-        questions = questionsHolder.questions;
-        hidePurchaseButtons();
-        disablePurchaseButtons();
-        GO_QuestionsRoot.SetActive(false);
-        SetUpMoneyBar();
-        pauseAutomising = true;
-        SetUpTimerBar();
-        graphDisplayer.stopGraph = true;
-
-        UpdateTextDisplays();
-        TutorialCanvas.SetActive(false);
-
-        AddNewState(gameStates.MainMenu);
-
-        restartStats();
-    }
     #region MAIN MENU
     void PauseGame()
     {
@@ -207,6 +213,7 @@ public class GameController : MonoBehaviour
         graphDisplayer.stopGraph = true;
         disablePurchaseButtons();
         StopAllHolds();
+        isTutorialPaused = true;
     }
     void UnpauseGame()
     {
@@ -214,6 +221,7 @@ public class GameController : MonoBehaviour
         resumeTimer();
         graphDisplayer.stopGraph = false;
         enablePurchaseButtons();
+        isTutorialPaused = false;
     }
     public void showMainMenu()
     {
@@ -222,6 +230,8 @@ public class GameController : MonoBehaviour
         //MusicLoopDistorder.musicDistortionStats baseStats = new MusicLoopDistorder.musicDistortionStats();
         //baseStats = MusicLoopDistorder.musicDistortionStats.CopyStats(baseStats, musicControl.musicStats_current);
         musicControl.TransitionFromCurrentStats(musicControl.musicStats_MainMenu, musicControl.seconds_TransitionToMainMenu);
+        if(bestTimeSeconds > 99999) { TMP_BestTimeDisplay.gameObject.SetActive(false); }
+        else { TMP_BestTimeDisplay.gameObject.SetActive(true); TMP_BestTimeDisplay.text = secondsFToString(bestTimeSeconds); }
 
     }
     void restartStats()
@@ -266,6 +276,7 @@ public class GameController : MonoBehaviour
     [SerializeField] int TutorialPhasesCount;
     [SerializeField] GameObject TutorialCanvas;
     public bool skipTutorial;
+    bool isTutorialPaused = false;
     IEnumerator BeginGameCoroutine()
     {
         int tutorialPhasesPased = 0;
@@ -276,6 +287,7 @@ public class GameController : MonoBehaviour
         if (skipTutorial) 
         {
             graphDisplayer.RestartDisplaying();
+            bestTime_StartNewCounting();
             AddNewState(gameStates.Playing);
 
             graphDisplayer.ShowGraph();
@@ -283,18 +295,20 @@ public class GameController : MonoBehaviour
             yield break;
         }
         AddNewState(gameStates.Tutorial);
+        UnpauseGame();
         graphDisplayer.RestartDisplaying();
         yield return new WaitForSeconds(1);
 
         tutorialPhasesPased++;
         Animator_Tutorial.SetInteger("phases", tutorialPhasesPased); ;
         PauseGame();
+        isTutorialPaused = false;
     Waitagain:
-        Debug.Log("can transition tutorial phase");
-        while (Input.GetMouseButtonDown(0) == false)
+        if(Input.GetMouseButtonDown(0))
         {
-            yield return null;
+            if (isTutorialPaused) { yield return null; goto Waitagain; }
         }
+        else { yield return null; goto Waitagain; }
 
         tutorialPhasesPased++;
         Animator_Tutorial.SetInteger("phases",tutorialPhasesPased);
@@ -309,6 +323,7 @@ public class GameController : MonoBehaviour
         restartTimer();
         graphDisplayer.RestartDisplaying();
 
+        bestTime_StartNewCounting();
         AddNewState(gameStates.Playing);
     }
     IEnumerator LensDistortionPopUp()
@@ -327,6 +342,53 @@ public class GameController : MonoBehaviour
     {
         Application.Quit();
     }
+    #endregion
+    #region BEST TIME
+
+    float bestTimeSeconds = 9999999f;
+    float bestTime_CurrentTimeSeconds;
+    Coroutine bestTime_currentCoroutine;
+    void bestTime_StartNewCounting()
+    {
+        if(bestTime_currentCoroutine != null) { StopCoroutine(bestTime_currentCoroutine); }
+
+        bestTime_CurrentTimeSeconds = 0;
+        bestTime_currentCoroutine = StartCoroutine(bestTime_countingCoroutine());
+    }
+    void bestTime_PauseCouting()
+    {
+        if (bestTime_currentCoroutine != null) { StopCoroutine(bestTime_currentCoroutine); }
+    }
+    void bestTime_ResumeCounting()
+    {
+        if (bestTime_currentCoroutine != null) { StopCoroutine(bestTime_currentCoroutine); }
+        bestTime_currentCoroutine = StartCoroutine(bestTime_countingCoroutine());
+    }
+    void bestTime_EndCounting()
+    {
+        if (bestTime_currentCoroutine != null) { StopCoroutine(bestTime_currentCoroutine); }
+        if(bestTime_CurrentTimeSeconds < bestTimeSeconds) { bestTimeSeconds = bestTime_CurrentTimeSeconds; }
+    }
+    IEnumerator bestTime_countingCoroutine()
+    {
+        while(true)
+        {
+            bestTime_CurrentTimeSeconds += Time.deltaTime;
+            Debug.Log(bestTime_CurrentTimeSeconds);
+            yield return null;
+        }
+    }
+    static string secondsFToString(float rawSeconds)
+    {
+        float rawMinuts = rawSeconds / 60f;
+        int minuts = Mathf.RoundToInt(rawMinuts - .5f);
+
+        float remainingRawSeconds = rawSeconds - (minuts * 60);
+        int seconds = Mathf.RoundToInt(remainingRawSeconds);
+
+        return minuts + ":" + seconds;
+    }
+
     #endregion
     #region AUTOMATIC SELLING AND BUYING
     [Header("Automatic Sell")]
@@ -591,6 +653,7 @@ public class GameController : MonoBehaviour
     [SerializeField] TextMeshProUGUI TMP_Lemons, TMP_Question, TMP_Answer1_Title, TMP_Answer2_Title;
     [SerializeField] TextMeshProUGUI TMP_Answer1_Price, TMP_Answer2_Price, TMP_Answer1_Upgrade, TMP_Answer2_Upgrade;
     [SerializeField] TextMeshProUGUI TMP_Buy_Amount, TMP_Sell_Amount, TMP_Buy_Price, TMP_Sell_Price, TMP_CurrentMoney_QuestionUI;
+    [SerializeField] TextMeshProUGUI TMP_BestTimeDisplay;
     
     void UpdateTextDisplays()
     {
@@ -759,6 +822,7 @@ public class GameController : MonoBehaviour
         billionareScreenController.StartBillionareCutscene();
         Debug.Log("Show billionare cutscene");
         postProController.SetPostProcesing(postProController.postPoInfo_GameOverScreens);
+        bestTime_EndCounting();
     }
 
     #endregion
@@ -769,9 +833,17 @@ public class GameController : MonoBehaviour
     public float GeneralVolumeMultiplier;
     void onPausePressed()
     {
-        if (gameStatesStack.Peek() == gameStates.PauseMenu) { CloseCurrentState(); return; }
-
         gameStates currentState = gameStatesStack.Peek();
+
+
+        if(currentState == gameStates.PauseMenu) { CloseCurrentState(); return; }
+
+        if(currentState == gameStates.Billionare)
+        {
+            billionareScreenController.SkipBillionareCutscene();
+            return;
+        }
+
         if(currentState == gameStates.MainMenu || currentState == gameStates.Bankrupt || currentState == gameStates.Billionare ) 
         { return; }
 
