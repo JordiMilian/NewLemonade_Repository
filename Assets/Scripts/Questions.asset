@@ -14,272 +14,306 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   questions:
   - Title: Better product 1
-    MoneyGoal: 43.283382
+    MoneyGoal: 38.714706
     QuestionText: You saved enough money to upgrade your lemon squeezer.
     dudeToAppear: 0
     answer1:
       answerTxt: Buy a manual squeezer.
       pricePercentOfGoal: 25
-      price: 10.820846
+      price: 9.678677
       upgradeType: 2
       variable: 150
     answer2:
       answerTxt: Buy an electric squeezer.
       pricePercentOfGoal: 60
-      price: 25.97003
+      price: 23.228825
       upgradeType: 2
       variable: 300
   - Title: Automation 1
-    MoneyGoal: 124.89674
+    MoneyGoal: 99.9219
     QuestionText: We could set up a cup delivery service in the neighborhood.
     dudeToAppear: 1
     answer1:
       answerTxt: Ask my friend James for help with his bike.
       pricePercentOfGoal: 15
-      price: 18.734512
+      price: 14.988285
       upgradeType: 4
       variable: 1
     answer2:
       answerTxt: Get the new Tesla drone to make automatic deliveries.
       pricePercentOfGoal: 30
-      price: 37.469025
+      price: 29.97657
       upgradeType: 4
       variable: 0.7
   - Title: Better transportation 1
-    MoneyGoal: 360.3969
+    MoneyGoal: 257.89645
     QuestionText: Walking to the store is annoying. Let's get something faster.
     dudeToAppear: 9
     answer1:
       answerTxt: Get a thrifted bicicle.
       pricePercentOfGoal: 40
-      price: 144.15877
+      price: 103.158585
       upgradeType: 0
       variable: 2
     answer2:
       answerTxt: Buy an Electric scooter.
       pricePercentOfGoal: 80
-      price: 288.31754
+      price: 206.31717
       upgradeType: 0
       variable: 4
   - Title: Better product 1.5
-    MoneyGoal: 1039.9465
+    MoneyGoal: 665.6257
     QuestionText: The store in my street is a bit pricey. Maybe I could find something
       cheaper around.
     dudeToAppear: 3
     answer1:
       answerTxt: Go to the local market and sweet-talk the farmer
       pricePercentOfGoal: 5
-      price: 51.997326
+      price: 33.281284
       upgradeType: 2
-      variable: 200
+      variable: 150
     answer2:
       answerTxt: Go to the supermarket
       pricePercentOfGoal: 40
-      price: 415.9786
+      price: 266.25027
       upgradeType: 2
-      variable: 300
+      variable: 250
   - Title: Better product 2
-    MoneyGoal: 3000.827
+    MoneyGoal: 1717.9668
     QuestionText: Let's bottle up the lemonade and sell that instead of just cups.
       Which material should we use?
     dudeToAppear: 5
     answer1:
       answerTxt: Glass Bottle
       pricePercentOfGoal: 40
-      price: 1200.3308
+      price: 687.1867
       upgradeType: 2
-      variable: 250
+      variable: 200
     answer2:
       answerTxt: Plastic Bottle
       pricePercentOfGoal: 30
-      price: 900.24805
+      price: 515.39
       upgradeType: 2
-      variable: 375
+      variable: 350
   - Title: Automation 2
-    MoneyGoal: 8659.0625
+    MoneyGoal: 4434.0386
     QuestionText: The old delivery service is getting overwhelmed. How should we
       expand it?
     dudeToAppear: 2
     answer1:
       answerTxt: I'll go myself when I can.
       pricePercentOfGoal: 15
-      price: 1298.8594
+      price: 665.1058
       upgradeType: 5
       variable: 4
     answer2:
       answerTxt: Use a Delivery App.
       pricePercentOfGoal: 75
-      price: 6494.297
+      price: 3325.5288
       upgradeType: 5
       variable: 10
   - Title: Better Transportation 2
-    MoneyGoal: 24986.234
+    MoneyGoal: 11444.166
     QuestionText: 'Let''s get something bigger to move our lemons. '
     dudeToAppear: 0
     answer1:
       answerTxt: Ask my friend Sergio for his van
       pricePercentOfGoal: 30
-      price: 7495.87
+      price: 3433.2498
       upgradeType: 0
       variable: 2
     answer2:
       answerTxt: Buy a new Truck
       pricePercentOfGoal: 85
-      price: 21238.299
+      price: 9727.541
       upgradeType: 0
       variable: 4
   - Title: Cheaper Buying Price 2
-    MoneyGoal: 72099.25
+    MoneyGoal: 29537.168
     QuestionText: At this rate I could get cheaper lemons in bulk. Who should sell
       them to me?
     dudeToAppear: 7
     answer1:
       answerTxt: Meet local farmers specialised in citrus.
       pricePercentOfGoal: 10
-      price: 7209.925
+      price: 2953.7168
       upgradeType: 2
-      variable: 200
+      variable: 175
     answer2:
-      answerTxt: Export  lemons from South Africa.
+      answerTxt: Export lemons from South Africa.
       pricePercentOfGoal: 60
-      price: 43259.55
+      price: 17722.3
       upgradeType: 2
-      variable: 400
+      variable: 300
   - Title: Automation 3
-    MoneyGoal: 208046.62
+    MoneyGoal: 76234.85
     QuestionText: Electric vehicles seem to be getting popular. Should we switch
       to that?
     dudeToAppear: 3
     answer1:
-      answerTxt: Sure! Maybe they are better for the environment.
+      answerTxt: Sure! Maybe they are better for the environment?
       pricePercentOfGoal: 50
-      price: 104023.31
+      price: 38117.426
       upgradeType: 3
       variable: -50
     answer2:
       answerTxt: Diesel all the way!
       pricePercentOfGoal: 40
-      price: 83218.65
+      price: 30493.941
       upgradeType: 3
       variable: -80
   - Title: Better Product 3
-    MoneyGoal: 600330.75
+    MoneyGoal: 196760.66
     QuestionText: People are getting tired of the old recipe. Let's try something
       new.
     dudeToAppear: 5
     answer1:
-      answerTxt: What if we use limes instead?
+      answerTxt: What if we use natural limes instead?
       pricePercentOfGoal: 50
-      price: 300165.38
+      price: 98380.33
       upgradeType: 2
-      variable: 175
+      variable: 200
     answer2:
       answerTxt: Add artificial mango additives to the formula
       pricePercentOfGoal: 30
-      price: 180099.22
+      price: 59028.195
       upgradeType: 2
-      variable: 350
+      variable: 300
+  - Title: Better Product 4.5
+    MoneyGoal: 507835.38
+    QuestionText: We are producing some chemical residues as a result of our massive
+      production.
+    dudeToAppear: 3
+    answer1:
+      answerTxt: Research ways to recycle or reduce our environmental harm.
+      pricePercentOfGoal: 80
+      price: 406268.3
+      upgradeType: 5
+      variable: 2
+    answer2:
+      answerTxt: Dumb them in the nearest river and pay any necessary fines.
+      pricePercentOfGoal: 20
+      price: 101567.08
+      upgradeType: 5
+      variable: 2
   - Title: Better Transportation 3
-    MoneyGoal: 1732289.8
+    MoneyGoal: 1310713.1
     QuestionText: Let's get 10 more trucks. But who should drive them?
     dudeToAppear: 8
     answer1:
       answerTxt: Just hire 10 truckers
       pricePercentOfGoal: 80
-      price: 1385831.8
+      price: 1048570.5
       upgradeType: 0
       variable: 3
     answer2:
       answerTxt: Get self-driving trucks
       pricePercentOfGoal: 20
-      price: 346457.94
+      price: 262142.62
       upgradeType: 0
       variable: 3
   - Title: Better product 3.5
-    MoneyGoal: 4998624
-    QuestionText: Our workers seem to be unionizing. Do we take action?
+    MoneyGoal: 3382924.8
+    QuestionText: 'Our workers seem to be unionizing. '
     dudeToAppear: 5
     answer1:
       answerTxt: Improve our workers conditions.
       pricePercentOfGoal: 80
-      price: 3998899.2
+      price: 2706339.8
       upgradeType: 2
       variable: 200
     answer2:
       answerTxt: Pay the union leaders away and lay off everyone else
-      pricePercentOfGoal: 30
-      price: 1499587.2
+      pricePercentOfGoal: 20
+      price: 676584.94
       upgradeType: 2
       variable: 200
   - Title: Automation 3.5
-    MoneyGoal: 14423824
+    MoneyGoal: 8731262
     QuestionText: Growing our own lemons would be more efficient at this point. Where
       do we build the farms?
     dudeToAppear: 6
     answer1:
       answerTxt: Build a Farm near the Factory
       pricePercentOfGoal: 50
-      price: 7211912
+      price: 4365631
       upgradeType: 5
-      variable: 5
+      variable: 3
     answer2:
-      answerTxt: Build a Farm in South Africa
+      answerTxt: Move our farms to South-East Asia
       pricePercentOfGoal: 60
-      price: 8654294
+      price: 5238757
       upgradeType: 5
-      variable: 10
+      variable: 6
   - Title: Better Product 4
-    MoneyGoal: 41620790
+    MoneyGoal: 22535216
     QuestionText: People seem concerned about smothing called "global warming". Could
       we do something about that?
     dudeToAppear: 9
     answer1:
       answerTxt: Reserch sustainable materials for our products.
       pricePercentOfGoal: 80
-      price: 33296634
+      price: 18028172
       upgradeType: 2
       variable: 125
     answer2:
       answerTxt: Change our logo green and make a marketing campaing about it.
       pricePercentOfGoal: 10
-      price: 4162079.2
+      price: 2253521.5
       upgradeType: 2
-      variable: 500
+      variable: 400
   - Title: Automation 4
-    MoneyGoal: 120099250
+    MoneyGoal: 58162948
     QuestionText: How do we deal with international shipping?
     dudeToAppear: 8
     answer1:
       answerTxt: Use the existing national railway infrastructure.
       pricePercentOfGoal: 10
-      price: 12009925
+      price: 5816295
       upgradeType: 0
       variable: 2
     answer2:
       answerTxt: Build an aerport near our new factory.
       pricePercentOfGoal: 90
-      price: 108089320
+      price: 52346652
       upgradeType: 0
-      variable: 6
+      variable: 7
   - Title: Better Product 5
-    MoneyGoal: 346553440
-    QuestionText: Other smaller lemonade companies are starting to get popular. What
-      to do?
+    MoneyGoal: 387450100
+    QuestionText: Another smaller lemonade company, EcoLemons, is starting to get
+      popular.
     dudeToAppear: 5
     answer1:
       answerTxt: Lower our prices to be more competitive
       pricePercentOfGoal: 20
-      price: 69310690
+      price: 77490024
       upgradeType: 2
       variable: 150
     answer2:
       answerTxt: Buy the competition and up the prices
       pricePercentOfGoal: 90
-      price: 311898100
+      price: 348705100
       upgradeType: 2
-      variable: 500
+      variable: 375
+  - Title: Better Product 4.51
+    MoneyGoal: 150117420
+    QuestionText: The government is trying to create a law to reduce the use of single-use
+      bottles and cans.
+    dudeToAppear: 0
+    answer1:
+      answerTxt: Accept the new law and change our production line
+      pricePercentOfGoal: 70
+      price: 105082200
+      upgradeType: 5
+      variable: 2
+    answer2:
+      answerTxt: Bribe some congressmen so they think twice about their vote.
+      pricePercentOfGoal: 15
+      price: 30023484
+      upgradeType: 5
+      variable: 4
   - Title: Final Question
-    MoneyGoal: 1.0000003e+9
+    MoneyGoal: 1.0000011e+9
     QuestionText: GAME OVER
     dudeToAppear: 0
     answer1:

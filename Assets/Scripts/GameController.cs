@@ -170,6 +170,7 @@ public class GameController : MonoBehaviour
                 break;
             case gameStates.Tutorial:
                 TutorialCanvas.SetActive(false);
+                Debug.Log("Exited tutorial");
                 break;
             case gameStates.Question:
                 hideQuestionUI();
@@ -279,7 +280,7 @@ public class GameController : MonoBehaviour
     bool isTutorialPaused = false;
     IEnumerator BeginGameCoroutine()
     {
-        int tutorialPhasesPased = 0;
+        
         if (skipTutorial) { graphDisplayer.HideGraph(); }
         yield return StartCoroutine(LensDistortionPopUp());
 
@@ -299,6 +300,7 @@ public class GameController : MonoBehaviour
         graphDisplayer.RestartDisplaying();
         yield return new WaitForSeconds(1);
 
+        int tutorialPhasesPased = 0;
         tutorialPhasesPased++;
         Animator_Tutorial.SetInteger("phases", tutorialPhasesPased); ;
         PauseGame();
@@ -318,7 +320,7 @@ public class GameController : MonoBehaviour
         
         if (tutorialPhasesPased < TutorialPhasesCount) { goto Waitagain; }
 
-        skipTutorial = true;
+        //skipTutorial = true;
         pauseAutomising = false;
         restartTimer();
         graphDisplayer.RestartDisplaying();
@@ -374,7 +376,7 @@ public class GameController : MonoBehaviour
         while(true)
         {
             bestTime_CurrentTimeSeconds += Time.deltaTime;
-            Debug.Log(bestTime_CurrentTimeSeconds);
+            //Debug.Log(bestTime_CurrentTimeSeconds);
             yield return null;
         }
     }
