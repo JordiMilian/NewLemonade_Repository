@@ -140,7 +140,7 @@ MonoBehaviour:
       upgradeType: 2
       variable: 175
     answer2:
-      answerTxt: Export lemons from South Africa.
+      answerTxt: Import lemons from South Africa.
       pricePercentOfGoal: 60
       price: 17722.3
       upgradeType: 2
@@ -178,7 +178,7 @@ MonoBehaviour:
       pricePercentOfGoal: 30
       price: 59028.195
       upgradeType: 2
-      variable: 300
+      variable: 350
   - Title: Better Product 4.5
     MoneyGoal: 507835.38
     QuestionText: We are producing some chemical residues as a result of our massive
@@ -191,7 +191,7 @@ MonoBehaviour:
       upgradeType: 5
       variable: 2
     answer2:
-      answerTxt: Dumb them in the nearest river and pay any necessary fines.
+      answerTxt: Dump them in the nearest river and pay any necessary fines.
       pricePercentOfGoal: 20
       price: 101567.08
       upgradeType: 5
@@ -205,13 +205,13 @@ MonoBehaviour:
       pricePercentOfGoal: 80
       price: 1048570.5
       upgradeType: 0
-      variable: 3
+      variable: 4
     answer2:
       answerTxt: Get self-driving trucks
       pricePercentOfGoal: 20
       price: 262142.62
       upgradeType: 0
-      variable: 3
+      variable: 4
   - Title: Better product 3.5
     MoneyGoal: 3382924.8
     QuestionText: 'Our workers seem to be unionizing. '
@@ -221,13 +221,13 @@ MonoBehaviour:
       pricePercentOfGoal: 80
       price: 2706339.8
       upgradeType: 2
-      variable: 200
+      variable: 250
     answer2:
       answerTxt: Pay the union leaders away and lay off everyone else
       pricePercentOfGoal: 20
       price: 676584.94
       upgradeType: 2
-      variable: 200
+      variable: 250
   - Title: Automation 3.5
     MoneyGoal: 8731262
     QuestionText: Growing our own lemons would be more efficient at this point. Where
@@ -255,7 +255,7 @@ MonoBehaviour:
       pricePercentOfGoal: 80
       price: 18028172
       upgradeType: 2
-      variable: 125
+      variable: 150
     answer2:
       answerTxt: Change our logo green and make a marketing campaing about it.
       pricePercentOfGoal: 10
@@ -271,7 +271,7 @@ MonoBehaviour:
       pricePercentOfGoal: 10
       price: 5816295
       upgradeType: 0
-      variable: 2
+      variable: 3
     answer2:
       answerTxt: Build an aerport near our new factory.
       pricePercentOfGoal: 90
@@ -279,39 +279,39 @@ MonoBehaviour:
       upgradeType: 0
       variable: 7
   - Title: Better Product 5
-    MoneyGoal: 387450100
+    MoneyGoal: 150117420
     QuestionText: Another smaller lemonade company, EcoLemons, is starting to get
       popular.
     dudeToAppear: 5
     answer1:
       answerTxt: Lower our prices to be more competitive
       pricePercentOfGoal: 20
-      price: 77490024
+      price: 30023484
       upgradeType: 2
       variable: 150
     answer2:
       answerTxt: Buy the competition and up the prices
       pricePercentOfGoal: 90
-      price: 348705100
+      price: 135105680
       upgradeType: 2
       variable: 375
   - Title: Better Product 4.51
-    MoneyGoal: 150117420
+    MoneyGoal: 387450100
     QuestionText: The government is trying to create a law to reduce the use of single-use
       bottles and cans.
     dudeToAppear: 0
     answer1:
       answerTxt: Accept the new law and change our production line
       pricePercentOfGoal: 70
-      price: 105082200
+      price: 271215070
       upgradeType: 5
       variable: 2
     answer2:
       answerTxt: Bribe some congressmen so they think twice about their vote.
       pricePercentOfGoal: 15
-      price: 30023484
+      price: 58117516
       upgradeType: 5
-      variable: 4
+      variable: 5
   - Title: Final Question
     MoneyGoal: 1.0000011e+9
     QuestionText: GAME OVER

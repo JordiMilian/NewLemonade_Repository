@@ -3305,7 +3305,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Restart
+  m_text: Try Again
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0cc763f6f9c4e9c44a016dd10a85b319, type: 2}
   m_sharedMaterial: {fileID: -6012250451024826203, guid: 0cc763f6f9c4e9c44a016dd10a85b319, type: 2}
@@ -11264,13 +11264,13 @@ MonoBehaviour:
 
 
     The
-    temperature has risen more than 20 degrees, the oceans have risen more than 10
-    meters and all sources of water are filled with trash.
+    temperatures are too high to live, the rising oceans have flooded many cities
+    and all sources of water are filled with trash.
 
 
 
-    There is no one
-    left to sell lemonade to.
+    There is no one left to
+    sell lemonade to.
 
 
 '
@@ -11282,7 +11282,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 771751935
+    rgba: 4294967295
   m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -16625,7 +16625,7 @@ MonoBehaviour:
   skipTutorial: 0
   secondsToAutomaticSell: 4
   isAutomatising: 0
-  timeBetweenPurchases: 0.25
+  timeBetweenPurchases: 0.16
   TimeToReachGoal: 30
   moneySlider_size1: {fileID: 1530675076}
   timerSlider_size01: {fileID: 120019925}

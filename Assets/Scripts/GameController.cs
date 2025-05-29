@@ -408,11 +408,13 @@ public class GameController : MonoBehaviour
         {
             onPausePressed();
         }
+        /*
         if (Input.GetKeyDown(KeyCode.M))
         {
             CurrentMoney = questionsHolder.questions[nextQuestionIndex].MoneyGoal;
             BuyLemons();
         }
+        */
         if(isHoldingBuy)
         {
             holdBuyTimer += Time.deltaTime;
@@ -513,7 +515,7 @@ public class GameController : MonoBehaviour
     #endregion
     #region Hold to BUY and SELL
     [Header("Hold to BUY and SELL")]
-    [SerializeField] float timeBetweenPurchases = .5f;
+    [SerializeField] float timeBetweenPurchases = .25f;
     Coroutine buyingCoroutine, sellingCoroutine;
     public void OnBuyDown()
     {
